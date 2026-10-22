@@ -27,9 +27,9 @@ New-Item -ItemType Directory -Force -Path $App | Out-Null
 irm "$Repo/server.py" -OutFile (Join-Path $App "server.py")
 irm "$Repo/index.html" -OutFile (Join-Path $App "index.html")
 
-Say "Downloading the voice model (3.3 GB, the slow part)"
+Say "Downloading the voice model (about 4.3 GB, the slow part)"
 $env:HF_HUB_OFFLINE = "0"
-& $Py -c "from huggingface_hub import snapshot_download; snapshot_download('k2-fsa/OmniVoice')"
+& $Py -c "from huggingface_hub import snapshot_download as d; d('k2-fsa/OmniVoice'); d('openai/whisper-small', allow_patterns=['*.json', '*.txt', 'model.safetensors'])"
 
 Say "Starting Voice Studio in the background, now and at every login"
 $Startup = [Environment]::GetFolderPath("Startup")

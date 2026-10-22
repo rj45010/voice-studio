@@ -27,7 +27,8 @@ HOME = Path.home() / ".voice-studio"
 SPEED_FILE = HOME / "speed.json"
 WEB_DIR = Path(__file__).resolve().parent
 
-state = {"model": None, "last_used": 0.0, "loading": False}
+state = {"model": None, "asr": None, "last_used": 0.0, "loading": False}
+ASR_MODEL = "openai/whisper-small"
 model_lock = threading.Lock()
 jobs: dict[str, dict] = {}
 
@@ -75,13 +76,35 @@ def get_model() -> tuple[OmniVoice, float | None]:
         return state["model"], None
 
 
+APPLE_ASR = WEB_DIR / "transcribe-mac"
+
+
+def transcribe(wav: np.ndarray, sr: int) -> str:
+    if APPLE_ASR.is_file():
+        import subprocess
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix=".wav") as f:
+            sf.write(f.name, wav, sr)
+            out = subprocess.run([str(APPLE_ASR), f.name], capture_output=True, text=True, timeout=120)
+        if out.returncode != 0:
+            raise RuntimeError(out.stderr.strip()[-300:] or "Apple speech recognition failed")
+        return " ".join(s["text"] for s in json.loads(out.stdout)["segments"])
+    with model_lock:
+        if state["asr"] is None:
+            from transformers import pipeline
+            state["asr"] = pipeline("automatic-speech-recognition", model=ASR_MODEL, device="cpu")
+        state["last_used"] = time.time()
+        return state["asr"]({"raw": wav, "sampling_rate": sr})["text"].strip()
+
+
 def unload_when_idle() -> None:
     while True:
         time.sleep(30)
         busy = any(j["status"] == "running" for j in jobs.values())
-        if state["model"] is not None and not busy and time.time() - state["last_used"] > IDLE_UNLOAD_SECONDS:
+        loaded = state["model"] is not None or state["asr"] is not None
+        if loaded and not busy and time.time() - state["last_used"] > IDLE_UNLOAD_SECONDS:
             with model_lock:
-                state["model"] = None
+                state["model"] = state["asr"] = None
             print("[voice-studio] model unloaded after idle", file=sys.stderr)
 
 
@@ -170,6 +193,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.json(403, {"error": "origin not allowed"})
         if self.path == "/api/convert":
             return self.convert()
+        if self.path == "/api/transcribe":
+            return self.transcribe()
         if self.path != "/api/jobs":
             return self.json(404, {"error": "not found"})
         try:
@@ -211,6 +236,21 @@ class Handler(BaseHTTPRequestHandler):
         buf = io.BytesIO()
         sf.write(buf, wav, 24000, format="WAV", subtype="PCM_16")
         self.reply(200, buf.getvalue(), "audio/wav")
+
+    def transcribe(self) -> None:
+        length = int(self.headers.get("Content-Length", "0"))
+        if not 0 < length <= 50_000_000:
+            return self.json(413, {"error": "file too large"})
+        try:
+            wav, sr = sf.read(io.BytesIO(self.rfile.read(length)), dtype="float32")
+        except sf.LibsndfileError:
+            return self.json(415, {"error": "send WAV audio"})
+        if wav.ndim > 1:
+            wav = wav.mean(axis=1)
+        try:
+            return self.json(200, {"text": transcribe(wav, sr)})
+        except Exception as exc:  # model missing offline, etc.; the page falls back to typing
+            return self.json(500, {"error": f"{type(exc).__name__}: {exc}"})
 
     def log_message(self, fmt: str, *args) -> None:
         pass

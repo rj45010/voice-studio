@@ -17,11 +17,9 @@
   --ink-3: #a1a1a6;
   --sep: rgba(0, 0, 0, 0.08);
   --accent: #e8604c;
-  --accent-ink: #ffffff;
   --accent-soft: rgba(232, 96, 76, 0.12);
   --good: #34a853;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.06);
-  --radius: 22px;
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 * { box-sizing: border-box; }
@@ -31,49 +29,49 @@ body {
   font: 17px/1.47 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
   letter-spacing: -0.01em;
 }
-main { max-width: 680px; margin: 0 auto; padding: 20px 16px 64px; }
-nav { display: flex; align-items: center; justify-content: space-between; height: 44px; margin-bottom: 32px; }
-.brand { font-weight: 600; font-size: 17px; display: flex; align-items: center; gap: 8px; }
+main { width: 100%; max-width: 1680px; margin: 0 auto; padding: 16px 16px 40px; }
+nav { display: flex; align-items: center; justify-content: space-between; height: 44px; }
+.brand { font-weight: 600; display: flex; align-items: center; gap: 8px; }
 .brand svg { width: 20px; height: 20px; color: var(--accent); }
 .status { font-size: 13px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
 .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
 .status.on::before { background: var(--good); }
 .status.off::before { background: var(--accent); }
-.hero { text-align: center; margin-bottom: 36px; }
-h1 { font: 700 clamp(40px, 7vw, 56px)/1.05 -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -0.035em; margin: 0; }
+.status.checking::before { animation: pulse 1.2s ease-in-out infinite; }
+.hero { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 20px; margin: 18px 0 22px; }
+h1 { font: 700 clamp(32px, 4vw, 44px)/1.08 -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -0.035em; margin: 0; }
 h1 span { color: var(--ink-3); }
-.hero p { margin: 14px 0 0; font-size: 19px; color: var(--ink-2); }
-.card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; }
-h2 { font-size: 13px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.02em; margin: 0 0 12px 4px; }
-.section { margin-bottom: 28px; }
+.hero p { margin: 0; font-size: 17px; color: var(--ink-2); }
+.card { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); padding: 22px; }
+h2 { font-size: 13px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.02em; margin: 0 0 10px 4px; height: 18px; }
+h2 small { text-transform: none; font-weight: 400; color: var(--ink-3); letter-spacing: 0; font-size: 13px; }
 .muted { color: var(--ink-2); font-size: 15px; }
-.small { font-size: 13px; color: var(--ink-3); margin: 10px 4px 0; }
 button, .btn {
-  font: inherit; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; border: 0; border-radius: 980px;
-  padding: 9px 18px; cursor: pointer; background: var(--fill); color: var(--ink);
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;
-  transition: background 0.2s, transform 0.15s var(--ease), opacity 0.2s;
+  font: inherit; font-size: 15px; font-weight: 500; border: 0; border-radius: 980px; padding: 9px 18px; cursor: pointer;
+  background: var(--fill); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  text-decoration: none; transition: background 0.2s, transform 0.15s var(--ease), opacity 0.2s, box-shadow 0.2s;
 }
 button:hover:not(:disabled), .btn:hover { background: var(--fill-2); }
 button:active:not(:disabled), .btn:active { transform: scale(0.97); }
-.primary { background: var(--accent); color: var(--accent-ink); }
+.primary { background: var(--accent); color: #fff; }
 .primary:hover:not(:disabled) { background: var(--accent); filter: brightness(1.06); }
-.big { font-size: 17px; padding: 13px 28px; }
+.big { font-size: 17px; padding: 12px 28px; }
+#go:not(:disabled) { box-shadow: 0 6px 18px -6px var(--accent); }
 button:disabled { opacity: 0.35; cursor: default; }
 :focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
 textarea, input[type=text] {
   width: 100%; font: inherit; color: var(--ink); background: var(--fill); border: 0; border-radius: 14px;
-  padding: 12px 14px; resize: vertical; transition: box-shadow 0.2s;
+  padding: 11px 14px; resize: none; transition: box-shadow 0.2s;
 }
 textarea:focus, input[type=text]:focus { outline: 0; box-shadow: 0 0 0 3px var(--accent-soft); }
 textarea::placeholder { color: var(--ink-3); }
-#script { min-height: 200px; font-size: 19px; line-height: 1.5; background: transparent; padding: 4px; border-radius: 0; resize: none; }
+#script { min-height: 220px; font-size: 19px; line-height: 1.5; background: transparent; padding: 4px; border-radius: 0; }
 #script:focus { box-shadow: none; }
 .seg { display: inline-flex; background: var(--fill); border-radius: 10px; padding: 2px; }
 .seg button { border-radius: 8px; padding: 6px 14px; font-size: 13px; background: transparent; }
 .seg button:hover:not(:disabled) { background: transparent; }
 .seg button.on { background: var(--surface); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
-.list { border-radius: 14px; overflow: hidden; background: var(--fill); margin-bottom: 16px; }
+.list { border-radius: 14px; overflow: hidden; background: var(--fill); margin-bottom: 12px; }
 .list:empty { display: none; }
 .voice { display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer; }
 .voice + .voice { box-shadow: inset 0 1px 0 var(--sep); }
@@ -83,17 +81,19 @@ textarea::placeholder { color: var(--ink-3); }
 .voice .name { font-weight: 500; }
 .voice .x { margin-left: auto; padding: 4px 10px; font-size: 13px; background: transparent; color: var(--ink-3); }
 .voice .x:hover { color: var(--accent); background: transparent; }
-.drop { border-radius: 16px; border: 1.5px dashed var(--ink-3); padding: 22px 18px; text-align: center; transition: background 0.2s, border-color 0.2s; }
+#addVoice { width: 100%; }
+.drop { border-radius: 16px; border: 1.5px dashed var(--ink-3); padding: 20px 16px; text-align: center; transition: background 0.2s, border-color 0.2s; }
 body.over .drop { background: var(--accent-soft); border-color: var(--accent); }
 .drop .row { justify-content: center; }
-#addVoice { width: 100%; }
-.read { margin-top: 18px; padding-top: 18px; box-shadow: inset 0 1px 0 var(--sep); }
-.read p { font-size: 19px; font-weight: 500; line-height: 1.4; margin: 12px auto 0; max-width: 32ch; }
-canvas { display: block; width: 100%; height: 56px; margin-top: 14px; }
-.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+.read { margin-top: 16px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--sep); }
+.read p { font-size: 18px; font-weight: 500; line-height: 1.4; margin: 12px auto 0; max-width: 34ch; }
+canvas { display: block; width: 100%; height: 48px; margin-top: 12px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
 .foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--sep); }
-label { display: block; font-size: 13px; color: var(--ink-2); margin: 16px 4px 6px; }
-audio { width: 100%; margin-top: 14px; }
+label { display: block; font-size: 13px; color: var(--ink-2); margin: 14px 4px 6px; }
+#vhint { color: var(--accent); }
+audio { width: 100%; }
+#vprev { margin-bottom: 4px; }
 .err { color: var(--accent); font-size: 15px; margin: 10px 4px 0; }
 .err:empty { display: none; }
 pre { font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace; background: var(--fill); border-radius: 12px; padding: 12px 14px; margin: 14px 0 0; white-space: pre-wrap; word-break: break-all; }
@@ -102,40 +102,34 @@ details summary::-webkit-details-marker { display: none; }
 details summary::after { content: "›"; margin-left: auto; font-size: 22px; color: var(--ink-3); transition: transform 0.25s var(--ease); }
 details[open] summary::after { transform: rotate(90deg); }
 details summary .muted { font-weight: 400; }
-.hidden { display: none !important; }
-.sheet { position: fixed; inset: 0; z-index: 10; display: grid; place-items: end center; background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease); }
-.sheet.open { opacity: 1; pointer-events: auto; }
-.sheet .panel { width: min(680px, 100%); background: var(--surface); border-radius: 28px 28px 0 0; padding: 32px 24px calc(32px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform 0.45s var(--ease); text-align: center; }
-.sheet.open .panel { transform: none; }
-@media (min-width: 720px) { .sheet { place-items: center; } .sheet .panel { border-radius: 28px; transform: translateY(24px) scale(0.98); } }
-.sheet h3 { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; margin: 0; }
-.bar { height: 6px; border-radius: 3px; background: var(--fill); overflow: hidden; margin: 24px 0 12px; }
+#install { margin-bottom: 20px; }
+#job { margin-top: 16px; padding: 16px; border-radius: 16px; background: var(--fill); }
+#job .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+#job strong { font-weight: 600; }
+.bar { height: 6px; border-radius: 3px; background: var(--fill-2); overflow: hidden; }
 .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width 0.6s var(--ease); }
+#result .row { margin-top: 10px; }
+.hidden { display: none !important; }
+.section { margin-bottom: 20px; }
+
 @media (min-width: 980px) {
-  main { max-width: 1240px; height: 100vh; height: 100dvh; padding: 16px 40px 32px; display: grid; grid-template-columns: 400px 1fr; grid-template-rows: auto auto 1fr; column-gap: 40px; }
-  nav { grid-column: 1 / -1; margin-bottom: 12px; }
-  .hero { grid-column: 1; text-align: left; margin: 8px 0 28px; }
-  h1 { font-size: 48px; }
-  .hero p { font-size: 17px; }
-  #install { grid-column: 2; grid-row: 2; align-self: start; margin-bottom: 20px; }
-  #voiceSection { grid-column: 1; grid-row: 3; min-height: 0; margin: 0; }
-  #scriptSection { grid-column: 2; grid-row: 2 / 4; display: flex; flex-direction: column; min-height: 0; margin: 0; }
-  #install:not(.hidden) ~ #scriptSection { grid-row: 3; }
-  #scriptSection .card { flex: 1; display: flex; flex-direction: column; min-height: 0; margin: 0; }
+  main { height: 100vh; height: 100dvh; padding: 16px clamp(24px, 4vw, 64px) 28px; display: grid; grid-template-columns: minmax(360px, 30%) 1fr; grid-template-rows: auto auto auto 1fr; column-gap: 24px; }
+  nav, .hero, #install { grid-column: 1 / -1; }
+  .section { display: flex; flex-direction: column; min-height: 0; margin: 0; grid-row: 4; }
+  .section > .card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  #voiceSection .drop { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  #newVoice { flex: 1; display: flex; flex-direction: column; }
   #script { flex: 1; min-height: 0; }
 }
-@keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
 @keyframes fade { from { opacity: 0; } }
-.hero, #install, .section { animation: rise 0.7s var(--ease) both; }
-#install { animation-delay: 0.05s; }
-#voiceSection { animation-delay: 0.1s; }
-#scriptSection { animation-delay: 0.18s; }
-#drop, #newVoice, .voice, #result, #progress { animation: fade 0.35s var(--ease) both; }
-.status.checking::before { animation: pulse 1.2s ease-in-out infinite; }
 @keyframes pulse { 50% { opacity: 0.3; } }
-#go:not(:disabled) { box-shadow: 0 6px 18px -6px var(--accent); }
-@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
-@media (prefers-reduced-motion: reduce) { *, .sheet .panel { transition: none !important; } }
+.hero, #install, .section { animation: rise 0.6s var(--ease) both; }
+#voiceSection { animation-delay: 0.06s; }
+#scriptSection { animation-delay: 0.12s; }
+#drop, #newVoice, .voice, #job, #result, #addVoice { animation: fade 0.35s var(--ease) both; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
@@ -146,12 +140,12 @@ details summary .muted { font-weight: 400; }
   </nav>
 
   <div class="hero">
-    <h1>Your script.<br><span>Your voice.</span></h1>
+    <h1>Your script. <span>Your voice.</span></h1>
     <p>Generated on your own computer. Nothing is uploaded.</p>
   </div>
 
   <details id="install" class="card hidden" open>
-    <summary>Install once <span class="muted">· about 4.5 GB</span></summary>
+    <summary>Install once <span class="muted">· about 4.5 GB, one command</span></summary>
     <p class="muted" style="margin:12px 0 0">Voice Studio runs on this computer, so it needs its engine. Paste this into Terminal once, then come back.</p>
     <div class="row"><div class="seg"><button data-os="mac" class="on">Mac / Linux</button><button data-os="win">Windows</button></div></div>
     <pre id="cmd"></pre>
@@ -159,7 +153,7 @@ details summary .muted { font-weight: 400; }
   </details>
 
   <div class="section" id="voiceSection">
-    <h2>Voice</h2>
+    <h2>Voice <small>(saved in this browser only)</small></h2>
     <div class="card">
       <div id="voices" class="list"></div>
       <button id="addVoice" class="hidden">+ Add another voice</button>
@@ -167,7 +161,7 @@ details summary .muted { font-weight: 400; }
         <div class="muted">Drop a 3–10 second recording anywhere, or</div>
         <div class="row"><button id="pick">Choose file</button><button id="rec" class="primary">Record</button></div>
         <input id="file" type="file" accept="audio/*" class="hidden">
-        <canvas id="wave" class="hidden" width="600" height="56"></canvas>
+        <canvas id="wave" class="hidden" width="600" height="48"></canvas>
         <div class="read">
           <div class="seg" id="lineStyle">
             <button data-line="energy" class="on">Reel energy</button><button data-line="calm">Calm</button><button data-line="hinglish">Hinglish</button>
@@ -179,42 +173,34 @@ details summary .muted { font-weight: 400; }
         <audio id="vprev" controls></audio>
         <label for="vname">Name</label>
         <input id="vname" type="text" value="Me">
-        <label for="vtext">What you said, word for word</label>
-        <textarea id="vtext" rows="2"></textarea>
+        <label for="vtext">What you said <span id="vhint"></span></label>
+        <textarea id="vtext" rows="3"></textarea>
         <p id="vwarn" class="err"></p>
         <div class="row"><button id="save" class="primary">Save voice</button><button id="cancel">Cancel</button></div>
       </div>
     </div>
-    <p class="small">Saved in this browser only.</p>
   </div>
 
   <div class="section" id="scriptSection">
     <h2>Script</h2>
     <div class="card">
       <textarea id="script" placeholder="Type what you want to hear. Write numbers as words."></textarea>
-      <div class="foot">
-        <span id="estimate" class="muted"></span>
-        <span class="row" style="margin:0"><button id="again" class="hidden">Last result</button><button id="go" class="primary big">Generate</button></span>
+      <div id="job" class="hidden">
+        <div class="top"><strong id="jobTitle">Generating</strong><span id="ptext" class="muted"></span></div>
+        <div id="progress" class="bar"><i id="fill"></i></div>
+        <div id="result" class="hidden">
+          <audio id="out" controls></audio>
+          <div class="row"><a id="dl" class="btn primary" download="voice.wav">Download</a><button id="close">Clear</button></div>
+        </div>
       </div>
       <p id="err" class="err"></p>
+      <div class="foot">
+        <span id="estimate" class="muted"></span>
+        <button id="go" class="primary big">Generate</button>
+      </div>
     </div>
   </div>
 </main>
-
-<div id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-  <div class="panel">
-    <h3 id="sheetTitle">Generating</h3>
-    <div id="progress">
-      <div class="bar"><i id="fill"></i></div>
-      <div id="ptext" class="muted"></div>
-    </div>
-    <div id="result" class="hidden">
-      <audio id="out" controls></audio>
-      <div class="row" style="justify-content:center"><a id="dl" class="btn primary" download="voice.wav">Download</a><button id="close">Done</button></div>
-    </div>
-    <p id="serr" class="err"></p>
-  </div>
-</div>
 
 <script>
 const API = "http://127.0.0.1:7861";
@@ -228,7 +214,7 @@ const LINES = {
   hinglish: "Dekho, yeh chaar free tools hain jo mere har mahine ke sau dollar bachaate hain. Teesra wala toh kamaal hai.",
 };
 const $ = (id) => document.getElementById(id);
-let engine = null, selected = null, pending = null, recorder = null, line = "energy", adding = false;
+let engine = null, selected = null, pending = null, recorder = null, line = "energy", adding = false, running = false;
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -259,7 +245,7 @@ async function renderVoices() {
   for (const v of list) {
     const el = document.createElement("div");
     el.className = "voice" + (v.id === selected ? " sel" : "");
-    el.innerHTML = `<span class="tick"></span><span class="name"></span><span class="muted"></span><button class="x" aria-label="Delete">Delete</button>`;
+    el.innerHTML = `<span class="tick"></span><span class="name"></span><span class="muted"></span><button class="x">Delete</button>`;
     el.querySelector(".name").textContent = v.name;
     el.querySelector(".muted").textContent = `${v.seconds.toFixed(1)}s`;
     el.onclick = () => { selected = v.id; store.set("voice", v.id); renderVoices(); };
@@ -292,7 +278,28 @@ async function toWav(blob) {
   return { wav: buf, seconds: decoded.duration };
 }
 
-async function takeAudio(blob) {
+function showForm() {
+  $("newVoice").classList.remove("hidden");
+  $("drop").classList.add("hidden"); $("addVoice").classList.add("hidden");
+}
+
+async function autoTranscribe() {
+  $("vtext").value = ""; $("vhint").textContent = "";
+  if (!engine) { $("vtext").placeholder = "Type exactly what you said in the recording."; return; }
+  $("vtext").placeholder = "Listening to your recording…"; $("save").disabled = true;
+  try {
+    const res = await fetch(`${API}/api/transcribe`, { method: "POST", body: pending.wav });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    $("vtext").value = data.text;
+    $("vhint").textContent = "· auto-transcribed, fix any misheard words";
+  } catch {
+    $("vtext").placeholder = "Couldn't transcribe it. Type exactly what you said.";
+  }
+  $("save").disabled = false;
+}
+
+async function takeAudio(blob, knownText) {
   try {
     pending = await toWav(blob);
   } catch {
@@ -303,8 +310,7 @@ async function takeAudio(blob) {
     } catch (e) {
       pending = null;
       $("vwarn").textContent = engine ? `Couldn't read that file: ${e.message}` : "Couldn't read that file. Try a WAV, M4A or MP3.";
-      $("newVoice").classList.remove("hidden");
-      $("drop").classList.add("hidden");
+      showForm();
       return;
     }
   }
@@ -312,14 +318,15 @@ async function takeAudio(blob) {
   const s = pending.seconds;
   $("vwarn").textContent = s < 3 ? `Only ${s.toFixed(1)}s. Record at least 3 seconds.` :
     s > 12 ? `${s.toFixed(1)}s is long. 3–10 seconds clones better and keeps every generation faster.` : "";
-  $("newVoice").classList.remove("hidden");
-  $("drop").classList.add("hidden"); $("addVoice").classList.add("hidden");
+  showForm();
+  if (knownText) { $("vtext").value = knownText; $("vhint").textContent = "· the line you read, edit if you changed words"; }
+  else autoTranscribe();
 }
 
 function resetNew() {
   pending = null; adding = false;
   $("newVoice").classList.add("hidden");
-  $("vwarn").textContent = "";
+  $("vwarn").textContent = ""; $("save").disabled = false;
   renderVoices();
 }
 $("addVoice").onclick = () => { adding = true; renderVoices(); };
@@ -333,14 +340,14 @@ function seg(group, onPick) {
 seg($("lineStyle"), (b) => { line = b.dataset.line; $("readLine").textContent = `“${LINES[line]}”`; });
 $("readLine").textContent = `“${LINES[line]}”`;
 
-$("pick").onclick = () => { $("vtext").value = ""; $("file").click(); };
-$("file").onchange = (e) => e.target.files[0] && takeAudio(e.target.files[0]);
+$("pick").onclick = () => $("file").click();
+$("file").onchange = (e) => { if (e.target.files[0]) takeAudio(e.target.files[0]); e.target.value = ""; };
 document.addEventListener("dragover", (e) => { e.preventDefault(); document.body.classList.add("over"); });
 document.addEventListener("dragleave", (e) => { if (!e.relatedTarget) document.body.classList.remove("over"); });
 document.addEventListener("drop", (e) => {
   e.preventDefault(); document.body.classList.remove("over");
   const f = e.dataTransfer.files[0];
-  if (f) { $("vtext").value = ""; takeAudio(f); }
+  if (f) takeAudio(f);
 });
 
 function drawWave(stream) {
@@ -378,8 +385,7 @@ $("rec").onclick = async () => {
     stream.getTracks().forEach((t) => t.stop());
     recorder = null;
     $("rec").textContent = "Record"; $("wave").classList.add("hidden"); $("pick").disabled = false;
-    $("vtext").value = LINES[line];
-    takeAudio(new Blob(chunks, { type: chunks[0]?.type }));
+    takeAudio(new Blob(chunks, { type: chunks[0]?.type }), LINES[line]);
   };
   recorder.start();
   $("rec").textContent = "Stop"; $("wave").classList.remove("hidden"); $("pick").disabled = true;
@@ -408,21 +414,10 @@ function updateEstimate() {
   const chars = $("script").value.trim().length;
   const est = estimateSeconds(chars);
   $("estimate").textContent = !engine ? "" : !selected ? "Add a voice first" : chars && est != null ? `About ${fmt(est)} on this computer` : "";
-  $("go").disabled = !engine || !selected || !chars;
+  $("go").disabled = running || !engine || !selected || !chars;
 }
 $("script").oninput = () => { store.set("draft", $("script").value); updateEstimate(); };
-
-function openSheet() {
-  $("sheetTitle").textContent = "Generating";
-  $("progress").classList.remove("hidden"); $("result").classList.add("hidden");
-  $("serr").textContent = ""; $("fill").style.width = "0";
-  $("sheet").classList.add("open");
-}
-$("close").onclick = () => {
-  $("sheet").classList.remove("open"); $("out").pause();
-  $("again").classList.toggle("hidden", !$("out").src || $("out").classList.contains("hidden"));
-};
-$("again").onclick = () => $("sheet").classList.add("open");
+$("close").onclick = () => { $("out").pause(); $("job").classList.add("hidden"); };
 
 $("go").onclick = async () => {
   const voice = await tx("readonly", (s) => s.get(selected));
@@ -431,39 +426,38 @@ $("go").onclick = async () => {
   let bin = "";
   for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   $("err").textContent = "";
-  $("go").disabled = true;
+  running = true; updateEstimate();
   let res;
   try {
     res = await fetch(`${API}/api/jobs`, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, ref_text: voice.text, ref_audio: btoa(bin) }),
     });
-  } catch { $("err").textContent = "Lost connection to the engine."; return checkEngine(); }
+  } catch { running = false; $("err").textContent = "Lost connection to the engine."; return checkEngine(); }
   const job = await res.json();
-  if (!res.ok) { $("err").textContent = job.error; $("go").disabled = false; return; }
+  if (!res.ok) { running = false; $("err").textContent = job.error; updateEstimate(); return; }
   const total = estimateSeconds(text.length), started = Date.now();
-  openSheet();
-  const fail = (msg) => {
-    $("sheetTitle").textContent = "Something went wrong";
-    $("serr").textContent = msg; $("progress").classList.add("hidden");
-    $("result").classList.remove("hidden"); $("out").classList.add("hidden"); $("dl").classList.add("hidden");
+  $("job").classList.remove("hidden"); $("result").classList.add("hidden"); $("progress").classList.remove("hidden");
+  $("jobTitle").textContent = `Generating with ${voice.name}`; $("ptext").textContent = ""; $("fill").style.width = "0";
+  const finish = (msg) => {
+    running = false;
+    if (msg) { $("err").textContent = msg; $("job").classList.add("hidden"); }
     updateEstimate();
   };
   const tick = async () => {
     let s;
     try { s = await (await fetch(`${API}/api/jobs/${job.id}`)).json(); }
-    catch { return fail("Lost connection to the engine."); }
+    catch { return finish("Lost connection to the engine."); }
     const elapsed = (Date.now() - started) / 1000;
     $("fill").style.width = `${Math.min(99, (s.done / s.total) * 100 || (elapsed / total) * 100)}%`;
-    if (s.status === "error") return fail(s.error);
+    if (s.status === "error") return finish(s.error);
     if (s.status === "done") {
       const url = URL.createObjectURL(await (await fetch(`${API}/api/jobs/${job.id}/audio`)).blob());
       $("out").src = url; $("dl").href = url;
-      $("out").classList.remove("hidden"); $("dl").classList.remove("hidden");
-      $("sheetTitle").textContent = "Ready";
+      $("jobTitle").textContent = "Ready"; $("ptext").textContent = `took ${fmt(elapsed)}`;
       $("progress").classList.add("hidden"); $("result").classList.remove("hidden");
       $("out").play().catch(() => {});
-      checkEngine(); return;
+      finish(); checkEngine(); return;
     }
     const phase = s.status === "queued" ? "Loading the voice model" : `Sentence ${s.done + 1} of ${s.total}`;
     $("ptext").textContent = `${phase} · about ${fmt(total - elapsed)} left`;

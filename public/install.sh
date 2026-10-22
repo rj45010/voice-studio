@@ -22,9 +22,15 @@ say "Downloading Voice Studio"
 mkdir -p "$APP"
 curl -fsSL "$REPO/server.py" -o "$APP/server.py"
 curl -fsSL "$REPO/index.html" -o "$APP/index.html"
+WHISPER="d('openai/whisper-small', allow_patterns=['*.json', '*.txt', 'model.safetensors'])"
+if [ "$(uname)" = Darwin ]; then
+  # Macs transcribe voice samples with Apple's built-in speech recognition instead of Whisper.
+  curl -fsSL "$REPO/transcribe-mac" -o "$APP/transcribe-mac" && chmod +x "$APP/transcribe-mac"
+  WHISPER="None"
+fi
 
-say "Downloading the voice model (3.3 GB, the slow part)"
-HF_HUB_OFFLINE=0 "$PY" -c "from huggingface_hub import snapshot_download; snapshot_download('k2-fsa/OmniVoice')"
+say "Downloading the voice model (about 4.3 GB, the slow part)"
+HF_HUB_OFFLINE=0 "$PY" -c "from huggingface_hub import snapshot_download as d; d('k2-fsa/OmniVoice'); $WHISPER"
 
 say "Starting Voice Studio in the background, now and at every login"
 case "$(uname)" in
