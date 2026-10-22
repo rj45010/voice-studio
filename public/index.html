@@ -194,7 +194,7 @@ details summary .muted { font-weight: 400; }
       <textarea id="script" placeholder="Type what you want to hear. Write numbers as words."></textarea>
       <div class="foot">
         <span id="estimate" class="muted"></span>
-        <button id="go" class="primary big">Generate</button>
+        <span class="row" style="margin:0"><button id="again" class="hidden">Last result</button><button id="go" class="primary big">Generate</button></span>
       </div>
       <p id="err" class="err"></p>
     </div>
@@ -418,7 +418,11 @@ function openSheet() {
   $("serr").textContent = ""; $("fill").style.width = "0";
   $("sheet").classList.add("open");
 }
-$("close").onclick = () => $("sheet").classList.remove("open");
+$("close").onclick = () => {
+  $("sheet").classList.remove("open"); $("out").pause();
+  $("again").classList.toggle("hidden", !$("out").src || $("out").classList.contains("hidden"));
+};
+$("again").onclick = () => $("sheet").classList.add("open");
 
 $("go").onclick = async () => {
   const voice = await tx("readonly", (s) => s.get(selected));
