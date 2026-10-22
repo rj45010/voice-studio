@@ -168,6 +168,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         if not self.origin_ok():
             return self.json(403, {"error": "origin not allowed"})
+        if self.path == "/api/convert":
+            return self.convert()
         if self.path != "/api/jobs":
             return self.json(404, {"error": "not found"})
         try:
@@ -191,6 +193,24 @@ class Handler(BaseHTTPRequestHandler):
         jobs[job_id] = {"status": "queued", "done": 0, "text": text, "sentences": sentences}
         threading.Thread(target=run_job, args=(jobs[job_id], ref_wav, ref_sr, ref_text), daemon=True).start()
         self.json(202, {"id": job_id, "total": len(sentences)})
+
+    def convert(self) -> None:
+        """Turn formats the browser can't decode (AIFF/AIFC from QuickTime, etc.) into 24 kHz mono WAV."""
+        length = int(self.headers.get("Content-Length", "0"))
+        if not 0 < length <= 50_000_000:
+            return self.json(413, {"error": "file too large"})
+        try:
+            wav, sr = sf.read(io.BytesIO(self.rfile.read(length)), dtype="float32")
+        except sf.LibsndfileError:
+            return self.json(415, {"error": "unsupported audio format; export as WAV or M4A"})
+        if wav.ndim > 1:
+            wav = wav.mean(axis=1)
+        if sr != 24000:
+            import librosa
+            wav = librosa.resample(wav, orig_sr=sr, target_sr=24000)
+        buf = io.BytesIO()
+        sf.write(buf, wav, 24000, format="WAV", subtype="PCM_16")
+        self.reply(200, buf.getvalue(), "audio/wav")
 
     def log_message(self, fmt: str, *args) -> None:
         pass

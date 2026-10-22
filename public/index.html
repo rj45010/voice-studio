@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --page: #a8d8e2;
+  --page: #c9d3ad;
   --dot: rgba(34, 30, 24, 0.22);
   --card: #fbf1e6;
   --ink: #221e18;
@@ -240,8 +240,15 @@ async function takeAudio(blob) {
   try {
     pending = await toWav(blob);
   } catch {
-    $("vwarn").textContent = "Couldn't read that file. Try a WAV, M4A or MP3.";
-    return;
+    try {
+      const res = await fetch(`${API}/api/convert`, { method: "POST", body: blob });
+      if (!res.ok) throw new Error((await res.json()).error);
+      pending = await toWav(await res.blob());
+    } catch (e) {
+      $("vwarn").textContent = engine ? `Couldn't read that file: ${e.message}` : "Couldn't read that file. Try a WAV, M4A or MP3.";
+      $("newVoice").classList.remove("hidden");
+      return;
+    }
   }
   $("vprev").src = URL.createObjectURL(new Blob([pending.wav], { type: "audio/wav" }));
   const s = pending.seconds;
@@ -285,6 +292,7 @@ $("rec").onclick = async () => {
 };
 $("cancel").onclick = resetNew;
 $("save").onclick = async () => {
+  if (!pending) return;
   const name = $("vname").value.trim() || "Me", text = $("vtext").value.trim();
   if (!text) { $("vwarn").textContent = "Type what you said in the recording."; return; }
   const id = crypto.randomUUID();
