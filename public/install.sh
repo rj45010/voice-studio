@@ -2,8 +2,8 @@
 # Voice Studio installer for macOS and Linux: curl -fsSL <url>/install.sh | sh
 set -eu
 
-REPO="https://voice-studio.seemsfit.workers.dev"
-SITE="https://voice-studio.seemsfit.workers.dev"
+REPO="https://voice-studio.seemslegit.workers.dev"
+SITE="https://voice-studio.seemslegit.workers.dev"
 APP="$HOME/.voice-studio/app"
 
 say() { printf '\n\033[1;36m==> %s\033[0m\n' "$1"; }

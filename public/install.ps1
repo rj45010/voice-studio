@@ -1,8 +1,8 @@
 # Voice Studio installer for Windows: irm <url>/install.ps1 | iex
 $ErrorActionPreference = "Stop"
 
-$Repo = "https://voice-studio.seemsfit.workers.dev"
-$Site = "https://voice-studio.seemsfit.workers.dev"
+$Repo = "https://voice-studio.seemslegit.workers.dev"
+$Site = "https://voice-studio.seemslegit.workers.dev"
 $App = Join-Path $HOME ".voice-studio\app"
 
 function Say($m) { Write-Host "`n==> $m" -ForegroundColor Cyan }

@@ -20,7 +20,7 @@ from omnivoice import OmniVoice
 PORT = int(os.environ.get("VOICE_STUDIO_PORT", "7861"))
 ORIGINS = {o for o in os.environ.get(
     "VOICE_STUDIO_ORIGINS",
-    "https://voice-studio.seemsfit.workers.dev,http://127.0.0.1:7861,http://localhost:7861",
+    "https://voice-studio.seemslegit.workers.dev,http://127.0.0.1:7861,http://localhost:7861",
 ).split(",") if o}
 IDLE_UNLOAD_SECONDS = 600
 HOME = Path.home() / ".voice-studio"
