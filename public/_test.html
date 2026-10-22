@@ -1,0 +1,45 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>layout test</title>
+<style>
+body { margin: 0; padding: 12px; background: #333; font: 13px system-ui; color: #fff; display: flex; flex-wrap: wrap; gap: 14px; }
+figure { margin: 0; }
+.box { overflow: hidden; outline: 1px solid #888; }
+iframe { border: 0; transform-origin: 0 0; background: #fff; }
+</style></head>
+<body>
+<script>
+const SIZES = [[1280, 720], [1440, 900], [1920, 1080], [1100, 650]];
+const STATES = ["install", "form", "voices", "generating", "result"];
+const state = new URLSearchParams(location.search).get("s") || "install";
+const scale = 0.33;
+for (const [w, h] of SIZES) {
+  const f = document.createElement("figure");
+  f.innerHTML = `<figcaption>${w}×${h} · ${state}</figcaption><div class="box" style="width:${w * scale}px;height:${h * scale}px"><iframe width="${w}" height="${h}" style="transform:scale(${scale})" src="index.html"></iframe></div>`;
+  document.body.append(f);
+  const fr = f.querySelector("iframe");
+  fr.onload = () => setTimeout(() => apply(fr.contentWindow, fr.contentDocument), 1200);
+}
+function apply(w, d) {
+  const $ = (id) => d.getElementById(id);
+  if (state !== "install") $("install").classList.add("hidden");
+  if (state === "form") { w.showForm(); $("vtext").value = "Wait, you've never tried it? Honestly, it's so much better than I expected!"; $("vhint").textContent = "· auto-transcribed, fix any misheard words"; }
+  if (state !== "install" && state !== "form") {
+    $("drop").classList.add("hidden"); $("addVoice").classList.remove("hidden");
+    $("voices").innerHTML = ["Me", "Me calm", "Me Hinglish"].map((n, i) => `<div class="voice${i ? "" : " sel"}"><span class="tick"></span><span class="name">${n}</span><span class="muted">8.1s</span><button class="x">Delete</button></div>`).join("");
+    $("script").value = "So like this is a longer voice generation, trying to generate a continuous shot of more than ten seconds.";
+  }
+  if (state === "generating" || state === "result") {
+    $("job").classList.remove("hidden"); $("jobTitle").textContent = "Generating with Me";
+    $("ptext").textContent = "Sentence 2 of 5 · about 9 min left"; $("fill").style.width = "40%";
+  }
+  if (state === "result") { $("progress").classList.add("hidden"); $("result").classList.remove("hidden"); $("jobTitle").textContent = "Ready"; $("ptext").textContent = "took 17 min"; }
+  const m = d.documentElement, cards = [...d.querySelectorAll(".section > .card")];
+  const over = cards.map((c) => c.scrollHeight - c.clientHeight);
+  const r = cards.map((c) => c.getBoundingClientRect());
+  const main = d.querySelector("main").getBoundingClientRect();
+  const report = { page: m.scrollHeight - w.innerHeight, overflow: over, alignTop: Math.round(r[0].top - r[1].top), alignBottom: Math.round(r[0].bottom - r[1].bottom),
+    pad: [Math.round(r[0].left - main.left), Math.round(main.right - r[1].right), Math.round(main.bottom - r[0].bottom)] };
+  (window.results ||= []).push(`${w.innerWidth}x${w.innerHeight} ${JSON.stringify(report)}`);
+}
+</script>
+</body></html>
