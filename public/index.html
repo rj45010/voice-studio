@@ -40,7 +40,7 @@ header p { margin: 4px 0 0; color: var(--ink-2); }
 .grid { display: grid; gap: 24px; }
 @media (min-width: 960px) { .grid { grid-template-columns: minmax(320px, 2fr) 3fr; align-items: start; } }
 section { background: var(--paper); border: var(--edge); box-shadow: var(--shadow); padding: 22px; }
-#install { background: var(--rose); margin-bottom: 24px; }
+#install { background: var(--rose); border: var(--edge); box-shadow: var(--shadow); margin-bottom: 20px; }
 #voiceCard { background: var(--sky); }
 #scriptCard { background: var(--butter); }
 h2 { font: 400 20px/1.2 "Archivo Black", sans-serif; text-transform: uppercase; margin: 0 0 16px; }
@@ -79,6 +79,20 @@ audio { width: 100%; margin-top: 14px; }
 .err { color: var(--danger); font-weight: 700; }
 .hidden { display: none !important; }
 label { display: block; font-weight: 700; margin: 14px 0 6px; }
+details > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::after { content: "▾"; margin-left: auto; font-size: 20px; }
+details[open] > summary::after { content: "▴"; }
+#install { padding: 14px 22px; }
+#install[open] > summary { margin-bottom: 8px; }
+@media (min-width: 960px) {
+  main { height: 100vh; height: 100dvh; display: flex; flex-direction: column; padding-top: 24px; padding-bottom: 32px; }
+  header { margin-bottom: 20px; }
+  .grid { flex: 1; min-height: 0; align-items: stretch; }
+  .grid > section { display: flex; flex-direction: column; min-height: 0; overflow: auto; }
+  #script { flex: 1; min-height: 120px; resize: none; }
+  #install { position: relative; z-index: 2; }
+}
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -90,13 +104,13 @@ label { display: block; font-weight: 700; margin: 14px 0 6px; }
     <span id="status" class="pill">Checking…</span>
   </header>
 
-  <section id="install" class="hidden">
-    <h2>Install once</h2>
-    <p class="muted">Voice Studio couldn't find the engine on this computer. Paste this into a terminal once (about 4.5 GB download), then reload this page.</p>
+  <details id="install" class="hidden" open>
+    <summary><h2 style="margin:0">Install once</h2><span class="muted">engine not found on this computer</span></summary>
+    <p class="muted" style="margin:0">Voice Studio couldn't find the engine on this computer. Paste this into a terminal once (about 4.5 GB download), then reload this page.</p>
     <div class="tabs"><button data-os="mac">Mac / Linux</button><button data-os="win" class="ghost">Windows</button></div>
     <pre id="cmd"></pre>
     <div class="row"><button id="copy" class="ghost">Copy command</button><button id="retry" class="primary">I've installed it</button></div>
-  </section>
+  </details>
 
   <div class="grid">
   <section id="voiceCard">
@@ -338,6 +352,8 @@ async function checkEngine() {
     $("status").textContent = "Engine not found";
     $("status").className = "pill off";
     $("install").classList.remove("hidden");
+    $("install").open = !store.get("installSeen");
+    store.set("installSeen", "1");
   }
   updateEstimate();
 }
