@@ -30,18 +30,19 @@ body {
   letter-spacing: -0.01em;
 }
 main { width: 100%; max-width: 1680px; margin: 0 auto; padding: 16px 16px 40px; }
-nav { display: flex; align-items: center; justify-content: space-between; height: 44px; }
-.brand { font-weight: 600; display: flex; align-items: center; gap: 8px; }
-.brand svg { width: 20px; height: 20px; color: var(--accent); }
 .status { font-size: 13px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
 .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
 .status.on::before { background: var(--good); }
 .status.off::before { background: var(--accent); }
 .status.checking::before { animation: pulse 1.2s ease-in-out infinite; }
-.hero { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 20px; margin: 18px 0 22px; }
-h1 { font: 700 clamp(32px, 4vw, 44px)/1.08 -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -0.035em; margin: 0; }
+h1 { font: 700 clamp(26px, 3vw, 36px)/1.1 -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -0.035em; margin: 0; }
 h1 span { color: var(--ink-3); }
-.hero p { margin: 0; font-size: 17px; color: var(--ink-2); }
+h1 svg { width: 0.8em; height: 0.8em; color: var(--accent); margin-right: 12px; vertical-align: -0.04em; }
+header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 18px; margin: 8px 0 18px; }
+header p { margin: 0; color: var(--ink-2); font-size: 15px; }
+header .status { margin-left: auto; align-self: center; }
+#install { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; padding: 12px 16px; margin-bottom: 18px; border-radius: 18px; }
+#install pre { flex: 1; min-width: 260px; margin: 0; padding: 9px 12px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
 .card { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); padding: 22px; }
 h2 { font-size: 13px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.02em; margin: 0 0 10px 4px; height: 18px; }
 h2 small { text-transform: none; font-weight: 400; color: var(--ink-3); letter-spacing: 0; font-size: 13px; }
@@ -97,12 +98,6 @@ audio { width: 100%; }
 .err { color: var(--accent); font-size: 15px; margin: 10px 4px 0; }
 .err:empty { display: none; }
 pre { font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace; background: var(--fill); border-radius: 12px; padding: 12px 14px; margin: 14px 0 0; white-space: pre-wrap; word-break: break-all; }
-details summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: 600; }
-details summary::-webkit-details-marker { display: none; }
-details summary::after { content: "›"; margin-left: auto; font-size: 22px; color: var(--ink-3); transition: transform 0.25s var(--ease); }
-details[open] summary::after { transform: rotate(90deg); }
-details summary .muted { font-weight: 400; }
-#install { margin-bottom: 20px; }
 #job { margin-top: 16px; padding: 16px; border-radius: 16px; background: var(--fill); }
 #job .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 #job strong { font-weight: 600; }
@@ -113,19 +108,25 @@ details summary .muted { font-weight: 400; }
 .section { margin-bottom: 20px; }
 
 @media (min-width: 980px) {
-  main { height: 100vh; height: 100dvh; padding: 16px clamp(24px, 4vw, 64px) 28px; display: grid; grid-template-columns: minmax(360px, 30%) 1fr; grid-template-rows: auto auto auto 1fr; column-gap: 24px; }
-  nav, .hero, #install { grid-column: 1 / -1; }
-  .section { display: flex; flex-direction: column; min-height: 0; margin: 0; grid-row: 4; }
-  .section > .card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  main { height: 100vh; height: 100dvh; padding: 16px clamp(24px, 4vw, 64px) 24px; display: flex; flex-direction: column; }
+  .cols { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(360px, 30%) 1fr; gap: 24px; }
+  .section { display: flex; flex-direction: column; min-height: 0; margin: 0; }
+  .section > .card { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: auto; scrollbar-width: none; }
+  .section > .card::-webkit-scrollbar { display: none; }
   #voiceSection .drop { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-  #newVoice { flex: 1; display: flex; flex-direction: column; }
-  #script { flex: 1; min-height: 0; }
+  #script { flex: 1; min-height: 80px; }
+}
+@media (min-width: 980px) and (max-height: 820px) {
+  .card { padding: 18px; }
+  .drop { padding: 14px 12px; }
+  .read { margin-top: 12px; padding-top: 12px; }
+  .read p { font-size: 16px; }
+  label { margin-top: 10px; }
 }
 
 @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
 @keyframes fade { from { opacity: 0; } }
 @keyframes pulse { 50% { opacity: 0.3; } }
-.hero, #install, .section { animation: rise 0.6s var(--ease) both; }
 #voiceSection { animation-delay: 0.06s; }
 #scriptSection { animation-delay: 0.12s; }
 #drop, #newVoice, .voice, #job, #result, #addVoice { animation: fade 0.35s var(--ease) both; }
@@ -134,24 +135,20 @@ details summary .muted { font-weight: 400; }
 </head>
 <body>
 <main>
-  <nav>
-    <div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>Voice Studio</div>
-    <span id="status" class="status checking">Checking…</span>
-  </nav>
-
-  <div class="hero">
-    <h1>Your script. <span>Your voice.</span></h1>
+  <header>
+    <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>Your script. <span>Your voice.</span></h1>
     <p>Generated on your own computer. Nothing is uploaded.</p>
+    <span id="status" class="status checking">Checking…</span>
+  </header>
+
+  <div id="install" class="card hidden">
+    <strong>Install once</strong><span class="muted">about 4.5 GB, paste into Terminal</span>
+    <div class="seg"><button data-os="mac" class="on">Mac / Linux</button><button data-os="win">Windows</button></div>
+    <pre id="cmd"></pre>
+    <button id="copy">Copy</button><button id="retry" class="primary">I've installed it</button>
   </div>
 
-  <details id="install" class="card hidden" open>
-    <summary>Install once <span class="muted">· about 4.5 GB, one command</span></summary>
-    <p class="muted" style="margin:12px 0 0">Voice Studio runs on this computer, so it needs its engine. Paste this into Terminal once, then come back.</p>
-    <div class="row"><div class="seg"><button data-os="mac" class="on">Mac / Linux</button><button data-os="win">Windows</button></div></div>
-    <pre id="cmd"></pre>
-    <div class="row"><button id="copy">Copy</button><button id="retry" class="primary">I've installed it</button></div>
-  </details>
-
+  <div class="cols">
   <div class="section" id="voiceSection">
     <h2>Voice <small>(saved in this browser only)</small></h2>
     <div class="card">
@@ -200,6 +197,7 @@ details summary .muted { font-weight: 400; }
       </div>
     </div>
   </div>
+  </div>
 </main>
 
 <script>
@@ -211,7 +209,7 @@ const INSTALL = {
 const LINES = {
   energy: "Wait, you've never tried it? Honestly, it's so much better than I expected, and I'm not even exaggerating!",
   calm: "Let me walk you through it slowly. First, take a breath. Then tell me, what would you like to hear today?",
-  hinglish: "Arre, sach mein? Mujhe laga tha yeh mushkil hoga, but honestly, yeh toh kaafi easy nikla!",
+  hinglish: "Arre, seriously? Maine socha tha this will be super tough, but honestly, yeh toh kaafi easy nikla!",
 };
 const $ = (id) => document.getElementById(id);
 let engine = null, selected = null, pending = null, recorder = null, line = "energy", adding = false, running = false;
@@ -477,8 +475,6 @@ async function checkEngine() {
     $("status").textContent = "Engine not installed";
     $("status").className = "status off";
     $("install").classList.remove("hidden");
-    $("install").open = !store.get("installSeen");
-    store.set("installSeen", "1");
   }
   updateEstimate();
 }
