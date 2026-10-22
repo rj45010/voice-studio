@@ -164,7 +164,7 @@ details summary .muted { font-weight: 400; }
         <canvas id="wave" class="hidden" width="600" height="48"></canvas>
         <div class="read">
           <div class="seg" id="lineStyle">
-            <button data-line="energy" class="on">Reel energy</button><button data-line="calm">Calm</button><button data-line="hinglish">Hinglish</button>
+            <button data-line="energy" class="on">Lively</button><button data-line="calm">Calm</button><button data-line="hinglish">Hinglish</button>
           </div>
           <p id="readLine"></p>
         </div>
@@ -209,9 +209,9 @@ const INSTALL = {
   win: "irm https://voice-studio.seemslegit.workers.dev/install.ps1 | iex",
 };
 const LINES = {
-  energy: "Okay, stop scrolling. These four free tools just saved me a hundred dollars a month, and honestly, the third one blew my mind.",
-  calm: "Here's how it works. You record a short sample, type your script, and it reads it back in your own voice.",
-  hinglish: "Dekho, yeh chaar free tools hain jo mere har mahine ke sau dollar bachaate hain. Teesra wala toh kamaal hai.",
+  energy: "Wait, you've never tried it? Honestly, it's so much better than I expected, and I'm not even exaggerating!",
+  calm: "Let me walk you through it slowly. First, take a breath. Then tell me, what would you like to hear today?",
+  hinglish: "Arre, sach mein? Mujhe laga tha yeh mushkil hoga, but honestly, yeh toh kaafi easy nikla!",
 };
 const $ = (id) => document.getElementById(id);
 let engine = null, selected = null, pending = null, recorder = null, line = "energy", adding = false, running = false;
