@@ -6,88 +6,92 @@
 <title>Voice Studio</title>
 <meta name="description" content="Type a script, hear it in your own voice. Runs on your computer.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #e7e4dd;
-  --ink: #22272b;
-  --ink-2: #5e666c;
-  --peach: #e9b98f;
-  --mint: #a9c7a4;
-  --sky: #b8c9d6;
-  --butter: #e6d7b5;
-  --lilac: #d5d2ca;
-  --rose: #e4b3a3;
-  --danger: #a63d2a;
-  --clay: 0 18px 36px -12px rgba(40, 44, 48, 0.35), inset 0 -10px 18px rgba(40, 44, 48, 0.16), inset 0 10px 18px rgba(255, 255, 255, 0.85);
-  --clay-sm: 0 8px 16px -6px rgba(40, 44, 48, 0.35), inset 0 -5px 10px rgba(40, 44, 48, 0.16), inset 0 5px 10px rgba(255, 255, 255, 0.85);
-  --well: inset 0 6px 12px rgba(40, 44, 48, 0.16), inset 0 -4px 8px rgba(255, 255, 255, 0.9);
+  --page: #f3c64d;
+  --dot: rgba(34, 30, 24, 0.22);
+  --card: #fdf4ea;
+  --ink: #221e18;
+  --ink-2: #6a6157;
+  --yellow: #ffdd2e;
+  --sky: #7fd0e6;
+  --coral: #f2675f;
+  --green: #74c255;
+  --line: 2px solid var(--ink);
+  --lift: 0 5px 0 var(--ink);
+  --lift-sm: 0 3px 0 var(--ink);
 }
 * { box-sizing: border-box; }
 body {
   margin: 0; min-height: 100vh; color: var(--ink);
-  background: radial-gradient(circle at 12% 8%, #f1eee8 0, transparent 40%), radial-gradient(circle at 90% 92%, #d6dcdf 0, transparent 45%), var(--bg);
-  font: 17px/1.5 "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: radial-gradient(var(--dot) 1.4px, transparent 1.6px) 0 0 / 26px 26px, var(--page);
+  font: 17px/1.5 "Josefin Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 main { padding: 24px 16px 48px; }
 @media (min-width: 720px) { main { padding: 28px 40px 48px; } }
 header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
-.mark { width: 60px; height: 60px; border-radius: 22px; background: var(--peach); box-shadow: var(--clay-sm); display: grid; place-items: center; }
-.mark svg { width: 28px; height: 28px; }
-h1 { font: 600 clamp(30px, 4.5vw, 46px)/1 "Fredoka", "Nunito", sans-serif; margin: 0; letter-spacing: -0.01em; }
-header p { margin: 4px 0 0; color: var(--ink-2); font-weight: 600; }
-.pill { margin-left: auto; font-weight: 800; font-size: 14px; padding: 10px 18px; border-radius: 999px; background: var(--lilac); box-shadow: var(--clay-sm); white-space: nowrap; }
-.pill.on { background: var(--mint); }
-.pill.off { background: var(--rose); }
-.grid { display: grid; gap: 28px; }
+.mark { width: 58px; height: 58px; border-radius: 50%; background: var(--card); border: var(--line); box-shadow: var(--lift-sm); display: grid; place-items: center; }
+.mark svg { width: 26px; height: 26px; }
+h1 { font: 700 clamp(30px, 4.5vw, 44px)/1 "Josefin Sans", sans-serif; margin: 0; letter-spacing: 0.01em; }
+h1 em { font-style: normal; color: var(--coral); }
+header p { margin: 6px 0 0; color: var(--ink); opacity: 0.75; }
+.pill { margin-left: auto; font-weight: 700; font-size: 14px; padding: 8px 16px; border-radius: 999px; background: var(--card); border: var(--line); white-space: nowrap; }
+.pill.on { background: var(--sky); }
+.pill.off { background: var(--coral); color: #fff; }
+.grid { display: grid; gap: 24px; }
 @media (min-width: 960px) { .grid { grid-template-columns: minmax(320px, 2fr) 3fr; align-items: start; } }
-section, #install { border-radius: 36px; padding: 26px; box-shadow: var(--clay); }
-#install { background: var(--rose); margin-bottom: 24px; }
-#voiceCard { background: var(--sky); }
-#scriptCard { background: var(--butter); }
-h2 { font: 600 22px/1.2 "Fredoka", sans-serif; margin: 0 0 16px; }
-.muted { color: var(--ink-2); font-size: 15px; font-weight: 600; }
+section, #install { background: var(--card); border: var(--line); border-radius: 22px; box-shadow: var(--lift); padding: 24px; }
+#install { margin-bottom: 22px; }
+h2 { font: 700 22px/1.2 "Josefin Sans", sans-serif; margin: 0 0 16px; display: flex; align-items: center; gap: 10px; }
+h2::before { content: ""; width: 14px; height: 14px; border: var(--line); background: var(--yellow); }
+#scriptCard h2::before { border-radius: 50%; background: var(--coral); }
+#install h2::before { width: 0; height: 0; border: 8px solid transparent; border-bottom: 14px solid var(--sky); border-top: 0; background: none; }
+.muted { color: var(--ink-2); font-size: 15px; }
 button, .btn {
-  font: inherit; font-weight: 800; font-size: 16px; color: var(--ink); background: var(--lilac);
-  border: 0; border-radius: 999px; box-shadow: var(--clay-sm); padding: 12px 24px; cursor: pointer;
+  font: inherit; font-weight: 700; font-size: 17px; color: var(--ink); background: var(--card);
+  border: var(--line); border-radius: 12px; box-shadow: var(--lift-sm); padding: 10px 22px 8px; cursor: pointer;
   text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+  transition: transform 0.08s, box-shadow 0.08s;
 }
-button:hover:not(:disabled), .btn:hover { transform: translateY(-2px); }
-button:active:not(:disabled), .btn:active { transform: translateY(1px) scale(0.98); box-shadow: var(--well); }
-button.primary, .btn { background: var(--mint); }
-button.ghost { background: #f1eee8; }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
-:focus-visible { outline: 3px solid #5f7f99; outline-offset: 3px; }
+button:active:not(:disabled), .btn:active { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+button.primary, .btn { background: var(--yellow); }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+:focus-visible { outline: 3px dashed var(--ink); outline-offset: 3px; }
 textarea, input[type=text] {
-  width: 100%; font: inherit; font-weight: 600; color: var(--ink); background: rgba(255, 255, 255, 0.6); border: 0;
-  border-radius: 22px; box-shadow: var(--well); padding: 14px 18px; resize: vertical;
+  width: 100%; font: inherit; color: var(--ink); background: #fffaf3; border: var(--line);
+  border-radius: 14px; padding: 12px 16px; resize: vertical;
 }
-textarea::placeholder { color: var(--ink-2); opacity: 0.7; }
+textarea::placeholder { color: var(--ink-2); }
 #script { min-height: 260px; }
-pre { font: 15px/1.5 "JetBrains Mono", ui-monospace, monospace; background: rgba(255, 255, 255, 0.6); border-radius: 18px; box-shadow: var(--well); padding: 14px 18px; margin: 10px 0; white-space: pre-wrap; word-break: break-all; }
+pre { font: 15px/1.5 "JetBrains Mono", ui-monospace, monospace; background: #fffaf3; border: var(--line); border-radius: 12px; padding: 12px 16px; margin: 10px 0; white-space: pre-wrap; word-break: break-all; }
 .tabs { display: flex; gap: 10px; margin: 14px 0 6px; }
-.tabs button { padding: 8px 16px; font-size: 14px; }
-.voices { display: grid; gap: 12px; margin-bottom: 16px; }
-.voice { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 22px; background: rgba(255, 255, 255, 0.55); box-shadow: var(--clay-sm); cursor: pointer; }
-.voice.sel { background: var(--peach); }
-.voice .name { font-weight: 800; }
-.voice .x { margin-left: auto; padding: 4px 12px; background: rgba(255, 255, 255, 0.7); }
-.drop { border-radius: 28px; background: rgba(255, 255, 255, 0.45); box-shadow: var(--well); padding: 26px 16px; text-align: center; transition: background 0.2s; }
-.drop strong { display: block; font: 600 19px/1.3 "Fredoka", sans-serif; margin-bottom: 4px; }
-body.over .drop { background: var(--mint); }
+.tabs button { padding: 6px 14px 4px; font-size: 15px; }
+.tabs button:not(.ghost) { background: var(--sky); }
+.voices { display: grid; gap: 0; margin-bottom: 16px; border: var(--line); border-radius: 16px; overflow: hidden; }
+.voices:empty { display: none; }
+.voice { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #fffaf3; cursor: pointer; }
+.voice + .voice { border-top: var(--line); }
+.voice::before { content: ""; width: 30px; height: 30px; flex: none; border-radius: 50%; border: var(--line); background: var(--sky); }
+.voice.sel { background: #fff3b8; }
+.voice.sel::before { background: var(--yellow); }
+.voice .name { font-weight: 700; }
+.voice .x { margin-left: auto; padding: 2px 10px 0; box-shadow: none; }
+.drop { border: 2px dashed var(--ink); border-radius: 18px; background: #fffaf3; padding: 24px 16px; text-align: center; }
+.drop strong { display: block; font-size: 19px; margin-bottom: 4px; }
+body.over .drop { background: #fff3b8; border-style: solid; }
 .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
-.bar { height: 18px; border-radius: 999px; background: rgba(255, 255, 255, 0.6); box-shadow: var(--well); margin: 16px 0 8px; overflow: hidden; }
-.bar i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--mint); box-shadow: var(--clay-sm); transition: width 0.4s; }
+.bar { height: 18px; border: var(--line); border-radius: 999px; background: #fffaf3; margin: 16px 0 8px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--green); border-right: var(--line); transition: width 0.4s; }
 audio { width: 100%; margin-top: 14px; }
-.err { color: var(--danger); font-weight: 800; }
+.err { color: var(--coral); font-weight: 700; }
 .hidden { display: none !important; }
-label { display: block; font-weight: 800; margin: 14px 0 6px; }
+label { display: block; font-weight: 700; margin: 14px 0 6px; }
 details > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; }
 details > summary::-webkit-details-marker { display: none; }
 details > summary::after { content: "▾"; margin-left: auto; font-size: 20px; }
 details[open] > summary::after { content: "▴"; }
-#install { padding: 16px 26px; }
+#install { padding: 14px 24px; }
 #install[open] > summary { margin-bottom: 8px; }
 @media (min-width: 960px) {
   main { height: 100vh; height: 100dvh; display: flex; flex-direction: column; padding-top: 24px; padding-bottom: 32px; }
@@ -103,8 +107,8 @@ details[open] > summary::after { content: "▴"; }
 <body>
 <main>
   <header>
-    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#22272b" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
-    <div><h1>Voice Studio</h1><p>Your script, in your voice. Runs on your computer.</p></div>
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#221e18" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
+    <div><h1>Voice <em>Studio</em></h1><p>Your script, in your voice. Runs on your computer.</p></div>
     <span id="status" class="pill">Checking…</span>
   </header>
 
@@ -113,7 +117,7 @@ details[open] > summary::after { content: "▴"; }
     <p class="muted" style="margin:0">Voice Studio couldn't find the engine on this computer. Paste this into a terminal once (about 4.5 GB download), then reload this page.</p>
     <div class="tabs"><button data-os="mac">Mac / Linux</button><button data-os="win" class="ghost">Windows</button></div>
     <pre id="cmd"></pre>
-    <div class="row"><button id="copy" class="ghost">Copy command</button><button id="retry" class="primary">I've installed it</button></div>
+    <div class="row"><button id="copy">Copy command</button><button id="retry" class="primary">I've installed it</button></div>
   </details>
 
   <div class="grid">
@@ -124,8 +128,8 @@ details[open] > summary::after { content: "▴"; }
       <strong>Drop your voice anywhere on the page</strong>
       a 3–10 second recording, or
       <div class="row" style="justify-content:center">
-        <button id="pick" class="ghost">Choose file</button>
-        <button id="rec" class="ghost">● Record</button>
+        <button id="pick">Choose file</button>
+        <button id="rec">● Record</button>
       </div>
       <input id="file" type="file" accept="audio/*" class="hidden">
     </div>
