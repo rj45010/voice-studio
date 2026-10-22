@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Voice Studio</title>
 <meta name="description" content="Type a script, hear it in your own voice. Runs on your computer.">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
 <style>
 :root {
   --bg: #f5f5f7;
@@ -23,21 +23,6 @@
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.06);
   --radius: 22px;
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #000000;
-    --surface: #1c1c1e;
-    --fill: #2c2c2e;
-    --fill-2: #3a3a3c;
-    --ink: #f5f5f7;
-    --ink-2: #a1a1a6;
-    --ink-3: #6e6e73;
-    --sep: rgba(255, 255, 255, 0.1);
-    --accent: #ff7a63;
-    --accent-soft: rgba(255, 122, 99, 0.16);
-    --shadow: none;
-  }
 }
 * { box-sizing: border-box; }
 html { -webkit-font-smoothing: antialiased; }
@@ -101,6 +86,7 @@ textarea::placeholder { color: var(--ink-3); }
 .drop { border-radius: 16px; border: 1.5px dashed var(--ink-3); padding: 22px 18px; text-align: center; transition: background 0.2s, border-color 0.2s; }
 body.over .drop { background: var(--accent-soft); border-color: var(--accent); }
 .drop .row { justify-content: center; }
+#addVoice { width: 100%; }
 .read { margin-top: 18px; padding-top: 18px; box-shadow: inset 0 1px 0 var(--sep); }
 .read p { font-size: 19px; font-weight: 500; line-height: 1.4; margin: 12px auto 0; max-width: 32ch; }
 canvas { display: block; width: 100%; height: 56px; margin-top: 14px; }
@@ -132,7 +118,7 @@ details summary .muted { font-weight: 400; }
   h1 { font-size: 48px; }
   .hero p { font-size: 17px; }
   #install { grid-column: 2; grid-row: 2; align-self: start; margin-bottom: 20px; }
-  #voiceSection { grid-column: 1; grid-row: 3; overflow: auto; min-height: 0; margin: 0; }
+  #voiceSection { grid-column: 1; grid-row: 3; min-height: 0; margin: 0; }
   #scriptSection { grid-column: 2; grid-row: 2 / 4; display: flex; flex-direction: column; min-height: 0; margin: 0; }
   #install:not(.hidden) ~ #scriptSection { grid-row: 3; }
   #scriptSection .card { flex: 1; display: flex; flex-direction: column; min-height: 0; margin: 0; }
@@ -176,6 +162,7 @@ details summary .muted { font-weight: 400; }
     <h2>Voice</h2>
     <div class="card">
       <div id="voices" class="list"></div>
+      <button id="addVoice" class="hidden">+ Add another voice</button>
       <div id="drop" class="drop">
         <div class="muted">Drop a 3–10 second recording anywhere, or</div>
         <div class="row"><button id="pick">Choose file</button><button id="rec" class="primary">Record</button></div>
@@ -241,7 +228,7 @@ const LINES = {
   hinglish: "Dekho, yeh chaar free tools hain jo mere har mahine ke sau dollar bachaate hain. Teesra wala toh kamaal hai.",
 };
 const $ = (id) => document.getElementById(id);
-let engine = null, selected = null, pending = null, recorder = null, line = "energy";
+let engine = null, selected = null, pending = null, recorder = null, line = "energy", adding = false;
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -282,6 +269,9 @@ async function renderVoices() {
     };
     $("voices").append(el);
   }
+  const showDrop = !pending && (adding || !list.length);
+  $("drop").classList.toggle("hidden", !showDrop);
+  $("addVoice").classList.toggle("hidden", showDrop || !!pending);
   updateEstimate();
 }
 
@@ -323,15 +313,16 @@ async function takeAudio(blob) {
   $("vwarn").textContent = s < 3 ? `Only ${s.toFixed(1)}s. Record at least 3 seconds.` :
     s > 12 ? `${s.toFixed(1)}s is long. 3–10 seconds clones better and keeps every generation faster.` : "";
   $("newVoice").classList.remove("hidden");
-  $("drop").classList.add("hidden");
+  $("drop").classList.add("hidden"); $("addVoice").classList.add("hidden");
 }
 
 function resetNew() {
-  pending = null;
+  pending = null; adding = false;
   $("newVoice").classList.add("hidden");
-  $("drop").classList.remove("hidden");
   $("vwarn").textContent = "";
+  renderVoices();
 }
+$("addVoice").onclick = () => { adding = true; renderVoices(); };
 
 function seg(group, onPick) {
   group.querySelectorAll("button").forEach((b) => b.onclick = () => {
@@ -402,7 +393,7 @@ $("save").onclick = async () => {
   const id = crypto.randomUUID();
   await tx("readwrite", (s) => s.put({ id, name, text, wav: pending.wav, seconds: pending.seconds }));
   selected = id; store.set("voice", id);
-  resetNew(); renderVoices();
+  resetNew();
 };
 
 function fmt(sec) {
