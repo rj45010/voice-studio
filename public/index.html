@@ -9,24 +9,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #efe6f4;
-  --ink: #3a2f4a;
-  --ink-2: #776a88;
-  --peach: #ffd9c7;
-  --mint: #c9ecd9;
-  --sky: #cfe3fb;
-  --butter: #fdeeb8;
-  --lilac: #ded0f6;
-  --rose: #fbd0d7;
-  --danger: #c2415a;
-  --clay: 0 18px 36px -12px rgba(92, 64, 128, 0.35), inset 0 -10px 18px rgba(92, 64, 128, 0.16), inset 0 10px 18px rgba(255, 255, 255, 0.85);
-  --clay-sm: 0 8px 16px -6px rgba(92, 64, 128, 0.35), inset 0 -5px 10px rgba(92, 64, 128, 0.16), inset 0 5px 10px rgba(255, 255, 255, 0.85);
-  --well: inset 0 6px 12px rgba(92, 64, 128, 0.16), inset 0 -4px 8px rgba(255, 255, 255, 0.9);
+  --bg: #e7e4dd;
+  --ink: #22272b;
+  --ink-2: #5e666c;
+  --peach: #e9b98f;
+  --mint: #a9c7a4;
+  --sky: #b8c9d6;
+  --butter: #e6d7b5;
+  --lilac: #d5d2ca;
+  --rose: #e4b3a3;
+  --danger: #a63d2a;
+  --clay: 0 18px 36px -12px rgba(40, 44, 48, 0.35), inset 0 -10px 18px rgba(40, 44, 48, 0.16), inset 0 10px 18px rgba(255, 255, 255, 0.85);
+  --clay-sm: 0 8px 16px -6px rgba(40, 44, 48, 0.35), inset 0 -5px 10px rgba(40, 44, 48, 0.16), inset 0 5px 10px rgba(255, 255, 255, 0.85);
+  --well: inset 0 6px 12px rgba(40, 44, 48, 0.16), inset 0 -4px 8px rgba(255, 255, 255, 0.9);
 }
 * { box-sizing: border-box; }
 body {
   margin: 0; min-height: 100vh; color: var(--ink);
-  background: radial-gradient(circle at 15% 10%, #fbe3ef 0, transparent 40%), radial-gradient(circle at 90% 90%, #dcecff 0, transparent 45%), var(--bg);
+  background: radial-gradient(circle at 12% 8%, #f1eee8 0, transparent 40%), radial-gradient(circle at 90% 92%, #d6dcdf 0, transparent 45%), var(--bg);
   font: 17px/1.5 "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 main { padding: 24px 16px 48px; }
@@ -56,9 +56,9 @@ button, .btn {
 button:hover:not(:disabled), .btn:hover { transform: translateY(-2px); }
 button:active:not(:disabled), .btn:active { transform: translateY(1px) scale(0.98); box-shadow: var(--well); }
 button.primary, .btn { background: var(--mint); }
-button.ghost { background: #fbf7ff; }
+button.ghost { background: #f1eee8; }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
-:focus-visible { outline: 3px solid #a98ce0; outline-offset: 3px; }
+:focus-visible { outline: 3px solid #5f7f99; outline-offset: 3px; }
 textarea, input[type=text] {
   width: 100%; font: inherit; font-weight: 600; color: var(--ink); background: rgba(255, 255, 255, 0.6); border: 0;
   border-radius: 22px; box-shadow: var(--well); padding: 14px 18px; resize: vertical;
@@ -103,7 +103,7 @@ details[open] > summary::after { content: "▴"; }
 <body>
 <main>
   <header>
-    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#3a2f4a" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#22272b" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
     <div><h1>Voice Studio</h1><p>Your script, in your voice. Runs on your computer.</p></div>
     <span id="status" class="pill">Checking…</span>
   </header>
