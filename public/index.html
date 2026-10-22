@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Studio</title>
+<meta name="description" content="Type a script, hear it in your own voice. Runs on your computer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f7f7;
+  --surface: #ffffff;
+  --surface-2: #e8f1f1;
+  --ink: #1b2424;
+  --ink-2: #4a5858;
+  --line: #d3dfdf;
+  --teal: #167c80;
+  --teal-ink: #ffffff;
+  --teal-soft: #d4ecec;
+  --danger: #b3261e;
+  --radius: 20px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.5 "Roboto Flex", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+.mark { width: 44px; height: 44px; border-radius: 50%; background: var(--teal); display: grid; place-items: center; }
+.mark svg { width: 24px; height: 24px; }
+h1 { font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+header p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.pill { margin-left: auto; font-size: 13px; padding: 6px 12px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+.pill.on { background: var(--teal-soft); color: var(--teal); }
+.pill.off { background: #fde7e5; color: var(--danger); }
+section { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; margin-bottom: 16px; }
+h2 { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--teal); margin: 0 0 14px; }
+.muted { color: var(--ink-2); font-size: 14px; }
+button, .btn {
+  font: inherit; font-weight: 500; font-size: 15px; border: 0; border-radius: 999px; padding: 10px 20px;
+  background: var(--teal); color: var(--teal-ink); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+}
+button.ghost { background: var(--surface-2); color: var(--ink); }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+textarea, input[type=text] {
+  width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px 14px; resize: vertical;
+}
+pre { font: 14px/1.5 "Roboto Mono", ui-monospace, monospace; background: var(--surface-2); border-radius: 12px; padding: 12px 14px; margin: 8px 0; white-space: pre-wrap; word-break: break-all; }
+.tabs { display: flex; gap: 6px; margin: 12px 0 4px; }
+.tabs button { padding: 6px 14px; font-size: 14px; }
+.voices { display: grid; gap: 8px; margin-bottom: 14px; }
+.voice { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; cursor: pointer; }
+.voice.sel { border-color: var(--teal); background: var(--teal-soft); }
+.voice .name { font-weight: 500; }
+.voice .x { margin-left: auto; background: none; color: var(--ink-2); padding: 4px 8px; }
+.drop { border: 2px dashed var(--line); border-radius: 16px; padding: 22px; text-align: center; color: var(--ink-2); }
+.drop.over { border-color: var(--teal); background: var(--teal-soft); }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.bar { height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin: 12px 0 6px; }
+.bar i { display: block; height: 100%; width: 0; background: var(--teal); transition: width 0.4s; }
+audio { width: 100%; margin-top: 12px; }
+.err { color: var(--danger); font-size: 14px; }
+.hidden { display: none !important; }
+label { display: block; font-size: 14px; color: var(--ink-2); margin: 12px 0 6px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
+    <div><h1>Voice Studio</h1><p>Your script, in your voice. Runs on your computer.</p></div>
+    <span id="status" class="pill">Checking…</span>
+  </header>
+
+  <section id="install" class="hidden">
+    <h2>Install once</h2>
+    <p class="muted">Voice Studio couldn't find the engine on this computer. Paste this into a terminal once (about 4.5 GB download), then reload this page.</p>
+    <div class="tabs"><button data-os="mac">Mac / Linux</button><button data-os="win" class="ghost">Windows</button></div>
+    <pre id="cmd"></pre>
+    <div class="row"><button id="copy" class="ghost">Copy command</button><button id="retry">I've installed it</button></div>
+  </section>
+
+  <section id="voiceCard">
+    <h2>Your voice</h2>
+    <div id="voices" class="voices"></div>
+    <div id="drop" class="drop">
+      Drop a 3–10 second recording here, or
+      <div class="row" style="justify-content:center">
+        <button id="pick" class="ghost">Choose file</button>
+        <button id="rec" class="ghost">● Record</button>
+      </div>
+      <input id="file" type="file" accept="audio/*" class="hidden">
+    </div>
+    <div id="newVoice" class="hidden">
+      <label for="vname">Name</label>
+      <input id="vname" type="text" value="Me">
+      <label for="vtext">What you said in the recording, word for word</label>
+      <textarea id="vtext" rows="2">Okay, stop scrolling. These four free tools just saved me a hundred dollars a month, and honestly, the third one blew my mind.</textarea>
+      <audio id="vprev" controls></audio>
+      <p id="vwarn" class="err"></p>
+      <div class="row"><button id="save">Save voice</button><button id="cancel" class="ghost">Cancel</button></div>
+    </div>
+    <p class="muted" style="margin:12px 0 0">Saved in this browser only. Nothing is uploaded anywhere.</p>
+  </section>
+
+  <section>
+    <h2>Script</h2>
+    <textarea id="script" rows="7" placeholder="Type what you want to hear. Write numbers as words."></textarea>
+    <div class="row">
+      <button id="go">Generate</button>
+      <span id="estimate" class="muted"></span>
+    </div>
+    <div id="progress" class="hidden">
+      <div class="bar"><i id="fill"></i></div>
+      <span id="ptext" class="muted"></span>
+    </div>
+    <p id="err" class="err"></p>
+    <div id="result" class="hidden">
+      <audio id="out" controls></audio>
+      <div class="row"><a id="dl" class="btn" download="voice.wav">Download WAV</a></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const API = "http://127.0.0.1:7861";
+const INSTALL = {
+  mac: "curl -fsSL https://voice-studio.seemsfit.workers.dev/install.sh | sh",
+  win: "irm https://voice-studio.seemsfit.workers.dev/install.ps1 | iex",
+};
+const $ = (id) => document.getElementById(id);
+let engine = null, selected = null, pending = null, recorder = null;
+
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+};
+
+function db() {
+  return new Promise((ok, fail) => {
+    const req = indexedDB.open("voice-studio", 1);
+    req.onupgradeneeded = () => req.result.createObjectStore("voices", { keyPath: "id" });
+    req.onsuccess = () => ok(req.result);
+    req.onerror = () => fail(req.error);
+  });
+}
+async function tx(mode, fn) {
+  const d = await db();
+  return new Promise((ok, fail) => {
+    const t = d.transaction("voices", mode), r = fn(t.objectStore("voices"));
+    t.oncomplete = () => ok(r && r.result);
+    t.onerror = () => fail(t.error);
+  });
+}
+
+async function renderVoices() {
+  const list = (await tx("readonly", (s) => s.getAll())) || [];
+  if (!list.find((v) => v.id === selected)) selected = list[0]?.id ?? null;
+  $("voices").innerHTML = "";
+  for (const v of list) {
+    const el = document.createElement("div");
+    el.className = "voice" + (v.id === selected ? " sel" : "");
+    el.innerHTML = `<span class="name"></span><span class="muted"></span><button class="x" title="Delete">✕</button>`;
+    el.querySelector(".name").textContent = v.name;
+    el.querySelector(".muted").textContent = `${v.seconds.toFixed(1)}s`;
+    el.onclick = () => { selected = v.id; store.set("voice", v.id); renderVoices(); };
+    el.querySelector(".x").onclick = async (e) => {
+      e.stopPropagation();
+      if (confirm(`Delete "${v.name}"?`)) { await tx("readwrite", (s) => s.delete(v.id)); renderVoices(); }
+    };
+    $("voices").append(el);
+  }
+  updateEstimate();
+}
+
+async function toWav(blob) {
+  const ctx = new OfflineAudioContext(1, 1, 24000);
+  const decoded = await ctx.decodeAudioData(await blob.arrayBuffer());
+  const off = new OfflineAudioContext(1, Math.ceil(decoded.duration * 24000), 24000);
+  const src = off.createBufferSource();
+  src.buffer = decoded; src.connect(off.destination); src.start();
+  const pcm = (await off.startRendering()).getChannelData(0);
+  const buf = new ArrayBuffer(44 + pcm.length * 2), v = new DataView(buf);
+  const w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  w(0, "RIFF"); v.setUint32(4, 36 + pcm.length * 2, true); w(8, "WAVEfmt ");
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, 24000, true); v.setUint32(28, 48000, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  w(36, "data"); v.setUint32(40, pcm.length * 2, true);
+  pcm.forEach((x, i) => v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, x)) * 0x7fff, true));
+  return { wav: buf, seconds: decoded.duration };
+}
+
+async function takeAudio(blob) {
+  try {
+    pending = await toWav(blob);
+  } catch {
+    $("vwarn").textContent = "Couldn't read that file. Try a WAV, M4A or MP3.";
+    return;
+  }
+  $("vprev").src = URL.createObjectURL(new Blob([pending.wav], { type: "audio/wav" }));
+  const s = pending.seconds;
+  $("vwarn").textContent = s < 3 ? `Only ${s.toFixed(1)}s. Record at least 3 seconds.` :
+    s > 12 ? `${s.toFixed(1)}s is long. 3–10 seconds clones better; longer clips slow every generation.` : "";
+  $("newVoice").classList.remove("hidden");
+  $("drop").classList.add("hidden");
+}
+
+function resetNew() {
+  pending = null;
+  $("newVoice").classList.add("hidden");
+  $("drop").classList.remove("hidden");
+  $("vwarn").textContent = "";
+}
+
+$("pick").onclick = () => $("file").click();
+$("file").onchange = (e) => e.target.files[0] && takeAudio(e.target.files[0]);
+$("drop").ondragover = (e) => { e.preventDefault(); $("drop").classList.add("over"); };
+$("drop").ondragleave = () => $("drop").classList.remove("over");
+$("drop").ondrop = (e) => {
+  e.preventDefault(); $("drop").classList.remove("over");
+  const f = e.dataTransfer.files[0];
+  if (f) takeAudio(f);
+};
+$("rec").onclick = async () => {
+  if (recorder) { recorder.stop(); return; }
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch { $("vwarn").textContent = "Microphone permission was denied."; return; }
+  const chunks = [];
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = (e) => chunks.push(e.data);
+  recorder.onstop = () => {
+    stream.getTracks().forEach((t) => t.stop());
+    recorder = null; $("rec").textContent = "● Record";
+    takeAudio(new Blob(chunks, { type: chunks[0]?.type }));
+  };
+  recorder.start();
+  $("rec").textContent = "■ Stop";
+};
+$("cancel").onclick = resetNew;
+$("save").onclick = async () => {
+  const name = $("vname").value.trim() || "Me", text = $("vtext").value.trim();
+  if (!text) { $("vwarn").textContent = "Type what you said in the recording."; return; }
+  const id = crypto.randomUUID();
+  await tx("readwrite", (s) => s.put({ id, name, text, wav: pending.wav, seconds: pending.seconds }));
+  selected = id; store.set("voice", id);
+  resetNew(); renderVoices();
+};
+
+function fmt(sec) {
+  sec = Math.max(0, Math.round(sec));
+  return sec < 90 ? `${sec} sec` : `${Math.round(sec / 60)} min`;
+}
+function estimateSeconds(chars) {
+  if (!engine) return null;
+  return chars * engine.speed.sec_per_char + (engine.loaded ? 0 : engine.speed.load_seconds);
+}
+function updateEstimate() {
+  const chars = $("script").value.trim().length;
+  const est = estimateSeconds(chars);
+  $("estimate").textContent = chars && est != null ? `About ${fmt(est)} on this computer` : "";
+  $("go").disabled = !engine || !selected || !chars;
+}
+$("script").oninput = () => { store.set("draft", $("script").value); updateEstimate(); };
+
+$("go").onclick = async () => {
+  const voice = await tx("readonly", (s) => s.get(selected));
+  const text = $("script").value.trim();
+  const bytes = new Uint8Array(voice.wav);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  const b64 = btoa(bin);
+  $("err").textContent = ""; $("result").classList.add("hidden");
+  $("go").disabled = true;
+  let res;
+  try {
+    res = await fetch(`${API}/api/jobs`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, ref_text: voice.text, ref_audio: b64 }),
+    });
+  } catch { $("err").textContent = "Lost connection to the engine."; return checkEngine(); }
+  const job = await res.json();
+  if (!res.ok) { $("err").textContent = job.error; $("go").disabled = false; return; }
+  const total = estimateSeconds(text.length), started = Date.now();
+  $("progress").classList.remove("hidden");
+  const tick = async () => {
+    let s;
+    try { s = await (await fetch(`${API}/api/jobs/${job.id}`)).json(); }
+    catch { $("err").textContent = "Lost connection to the engine."; return; }
+    const elapsed = (Date.now() - started) / 1000;
+    $("fill").style.width = `${Math.min(99, (s.done / s.total) * 100 || (elapsed / total) * 100)}%`;
+    if (s.status === "error") {
+      $("err").textContent = s.error; $("progress").classList.add("hidden"); updateEstimate(); return;
+    }
+    if (s.status === "done") {
+      const blob = await (await fetch(`${API}/api/jobs/${job.id}/audio`)).blob();
+      const url = URL.createObjectURL(blob);
+      $("out").src = url; $("dl").href = url;
+      $("progress").classList.add("hidden"); $("result").classList.remove("hidden");
+      checkEngine(); return;
+    }
+    const phase = s.status === "queued" ? "Loading the voice model" : `Sentence ${s.done + 1} of ${s.total}`;
+    $("ptext").textContent = `${phase} · ${fmt(elapsed)} elapsed · about ${fmt(total - elapsed)} left`;
+    setTimeout(tick, 2000);
+  };
+  tick();
+};
+
+async function checkEngine() {
+  try {
+    engine = await (await fetch(`${API}/api/status`)).json();
+    $("status").textContent = `Engine ready · ${engine.device.toUpperCase()}`;
+    $("status").className = "pill on";
+    $("install").classList.add("hidden");
+  } catch {
+    engine = null;
+    $("status").textContent = "Engine not found";
+    $("status").className = "pill off";
+    $("install").classList.remove("hidden");
+  }
+  updateEstimate();
+}
+
+document.querySelectorAll("[data-os]").forEach((b) => b.onclick = () => {
+  document.querySelectorAll("[data-os]").forEach((x) => x.classList.toggle("ghost", x !== b));
+  $("cmd").textContent = INSTALL[b.dataset.os];
+});
+$("cmd").textContent = navigator.platform.startsWith("Win") ? INSTALL.win : INSTALL.mac;
+if (navigator.platform.startsWith("Win")) document.querySelector("[data-os=win]").click();
+$("copy").onclick = () => navigator.clipboard.writeText($("cmd").textContent).then(() => $("copy").textContent = "Copied");
+$("retry").onclick = checkEngine;
+
+$("script").value = store.get("draft") || "";
+selected = store.get("voice");
+renderVoices();
+checkEngine();
+</script>
+</body>
+</html>
