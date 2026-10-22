@@ -81,6 +81,9 @@ pre { font: 15px/1.5 "JetBrains Mono", ui-monospace, monospace; background: #fff
 .voice .x { margin-left: auto; padding: 2px 10px 0; box-shadow: none; }
 .drop { border: 2px dashed var(--ink); border-radius: 18px; background: #fffaf3; padding: 24px 16px; text-align: center; }
 .drop strong { display: block; font-size: 19px; margin-bottom: 4px; }
+.readme { margin-top: 18px; padding-top: 14px; border-top: 2px dashed rgba(34, 30, 24, 0.25); display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; }
+.readme select { font: inherit; font-weight: 700; font-size: 14px; color: var(--ink); background: var(--card); border: var(--line); border-radius: 10px; padding: 4px 8px; }
+.readme p { flex-basis: 100%; margin: 6px 0 0; font-size: 18px; font-weight: 600; line-height: 1.4; }
 body.over .drop { background: #fff3b8; border-style: solid; }
 .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
 .bar { height: 18px; border: var(--line); border-radius: 999px; background: #fffaf3; margin: 16px 0 8px; overflow: hidden; }
@@ -135,12 +138,21 @@ details[open] > summary::after { content: "▴"; }
         <button id="rec">● Record</button>
       </div>
       <input id="file" type="file" accept="audio/*" class="hidden">
+      <div class="readme">
+        <span class="muted">To record, read this aloud in the tone you want:</span>
+        <select id="lineStyle" aria-label="Recording style">
+          <option value="energy">Reel energy</option>
+          <option value="calm">Calm</option>
+          <option value="hinglish">Hinglish</option>
+        </select>
+        <p id="readLine"></p>
+      </div>
     </div>
     <div id="newVoice" class="hidden">
       <label for="vname">Name</label>
       <input id="vname" type="text" value="Me">
       <label for="vtext">What you said in the recording, word for word</label>
-      <textarea id="vtext" rows="2">Okay, stop scrolling. These four free tools just saved me a hundred dollars a month, and honestly, the third one blew my mind.</textarea>
+      <textarea id="vtext" rows="2"></textarea>
       <audio id="vprev" controls></audio>
       <p id="vwarn" class="err"></p>
       <div class="row"><button id="save" class="primary">Save voice</button><button id="cancel" class="ghost">Cancel</button></div>
@@ -265,7 +277,14 @@ function resetNew() {
   $("vwarn").textContent = "";
 }
 
-$("pick").onclick = () => $("file").click();
+const LINES = {
+  energy: "Okay, stop scrolling. These four free tools just saved me a hundred dollars a month, and honestly, the third one blew my mind.",
+  calm: "Here's how it works. You record a short sample, type your script, and it reads it back in your own voice.",
+  hinglish: "Dekho, yeh chaar free tools hain jo mere har mahine ke sau dollar bachaate hain. Teesra wala toh kamaal hai.",
+};
+$("lineStyle").onchange = () => { $("readLine").textContent = `“${LINES[$("lineStyle").value]}”`; };
+$("lineStyle").onchange();
+$("pick").onclick = () => { $("vtext").value = ""; $("file").click(); };
 $("file").onchange = (e) => e.target.files[0] && takeAudio(e.target.files[0]);
 document.addEventListener("dragover", (e) => { e.preventDefault(); document.body.classList.add("over"); });
 document.addEventListener("dragleave", (e) => { if (!e.relatedTarget) document.body.classList.remove("over"); });
@@ -285,6 +304,7 @@ $("rec").onclick = async () => {
   recorder.onstop = () => {
     stream.getTracks().forEach((t) => t.stop());
     recorder = null; $("rec").textContent = "● Record";
+    $("vtext").value = LINES[$("lineStyle").value];
     takeAudio(new Blob(chunks, { type: chunks[0]?.type }));
   };
   recorder.start();
