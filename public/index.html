@@ -64,6 +64,16 @@ header .status { justify-self: end; }
   .private { grid-column: 1 / -1; grid-row: 2; justify-self: start; }
 }
 #install { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; padding: 12px 16px; margin-bottom: 18px; border-radius: 18px; }
+#install { background: var(--accent); color: #fff; box-shadow: 0 10px 30px -12px var(--accent); }
+#install .muted { color: rgba(255, 255, 255, 0.82); }
+#install .seg { background: rgba(255, 255, 255, 0.2); }
+#install .seg button { color: #fff; }
+#install .seg button.on { background: #fff; color: var(--accent); box-shadow: none; }
+#install pre { background: rgba(0, 0, 0, 0.14); color: #fff; }
+#install button:not(.primary):not(.seg button) { background: rgba(255, 255, 255, 0.2); color: #fff; }
+#install button:not(.primary):hover { background: rgba(255, 255, 255, 0.3); }
+#install .primary { background: #fff; color: var(--accent); }
+#install .primary:hover { background: #fff; filter: none; opacity: 0.92; }
 @media (max-width: 1200px) { #install .note { display: none; } }
 #install pre { flex: 1; min-width: 260px; margin: 0; padding: 9px 12px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
 .card { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); padding: 22px; }
