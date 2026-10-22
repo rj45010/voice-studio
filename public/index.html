@@ -6,84 +6,88 @@
 <title>Voice Studio</title>
 <meta name="description" content="Type a script, hear it in your own voice. Runs on your computer.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5efe2;
-  --paper: #fffaf0;
-  --ink: #1d1a16;
-  --ink-2: #5b544a;
-  --butter: #f7dc8c;
-  --sage: #bcd8b7;
-  --rose: #f2b8b0;
-  --sky: #b9d3e8;
-  --lilac: #d6c6ea;
-  --danger: #b5321f;
-  --edge: 3px solid var(--ink);
-  --shadow: 6px 6px 0 var(--ink);
+  --bg: #efe6f4;
+  --ink: #3a2f4a;
+  --ink-2: #776a88;
+  --peach: #ffd9c7;
+  --mint: #c9ecd9;
+  --sky: #cfe3fb;
+  --butter: #fdeeb8;
+  --lilac: #ded0f6;
+  --rose: #fbd0d7;
+  --danger: #c2415a;
+  --clay: 0 18px 36px -12px rgba(92, 64, 128, 0.35), inset 0 -10px 18px rgba(92, 64, 128, 0.16), inset 0 10px 18px rgba(255, 255, 255, 0.85);
+  --clay-sm: 0 8px 16px -6px rgba(92, 64, 128, 0.35), inset 0 -5px 10px rgba(92, 64, 128, 0.16), inset 0 5px 10px rgba(255, 255, 255, 0.85);
+  --well: inset 0 6px 12px rgba(92, 64, 128, 0.16), inset 0 -4px 8px rgba(255, 255, 255, 0.9);
 }
 * { box-sizing: border-box; }
 body {
-  margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
-  font: 17px/1.5 "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  margin: 0; min-height: 100vh; color: var(--ink);
+  background: radial-gradient(circle at 15% 10%, #fbe3ef 0, transparent 40%), radial-gradient(circle at 90% 90%, #dcecff 0, transparent 45%), var(--bg);
+  font: 17px/1.5 "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 main { padding: 24px 16px 48px; }
-@media (min-width: 720px) { main { padding: 32px 40px 64px; } }
-header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
-.mark { width: 56px; height: 56px; background: var(--butter); border: var(--edge); box-shadow: 4px 4px 0 var(--ink); display: grid; place-items: center; }
+@media (min-width: 720px) { main { padding: 28px 40px 48px; } }
+header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.mark { width: 60px; height: 60px; border-radius: 22px; background: var(--peach); box-shadow: var(--clay-sm); display: grid; place-items: center; }
 .mark svg { width: 28px; height: 28px; }
-h1 { font: 400 clamp(32px, 5vw, 52px)/1 "Archivo Black", "Space Grotesk", sans-serif; margin: 0; letter-spacing: -0.02em; text-transform: uppercase; }
-header p { margin: 4px 0 0; color: var(--ink-2); }
-.pill { margin-left: auto; font-weight: 700; font-size: 14px; padding: 8px 14px; border: var(--edge); background: var(--paper); box-shadow: 3px 3px 0 var(--ink); white-space: nowrap; }
-.pill.on { background: var(--sage); }
+h1 { font: 600 clamp(30px, 4.5vw, 46px)/1 "Fredoka", "Nunito", sans-serif; margin: 0; letter-spacing: -0.01em; }
+header p { margin: 4px 0 0; color: var(--ink-2); font-weight: 600; }
+.pill { margin-left: auto; font-weight: 800; font-size: 14px; padding: 10px 18px; border-radius: 999px; background: var(--lilac); box-shadow: var(--clay-sm); white-space: nowrap; }
+.pill.on { background: var(--mint); }
 .pill.off { background: var(--rose); }
-.grid { display: grid; gap: 24px; }
+.grid { display: grid; gap: 28px; }
 @media (min-width: 960px) { .grid { grid-template-columns: minmax(320px, 2fr) 3fr; align-items: start; } }
-section { background: var(--paper); border: var(--edge); box-shadow: var(--shadow); padding: 22px; }
-#install { background: var(--rose); border: var(--edge); box-shadow: var(--shadow); margin-bottom: 20px; }
+section, #install { border-radius: 36px; padding: 26px; box-shadow: var(--clay); }
+#install { background: var(--rose); margin-bottom: 24px; }
 #voiceCard { background: var(--sky); }
 #scriptCard { background: var(--butter); }
-h2 { font: 400 20px/1.2 "Archivo Black", sans-serif; text-transform: uppercase; margin: 0 0 16px; }
-.muted { color: var(--ink-2); font-size: 15px; }
+h2 { font: 600 22px/1.2 "Fredoka", sans-serif; margin: 0 0 16px; }
+.muted { color: var(--ink-2); font-size: 15px; font-weight: 600; }
 button, .btn {
-  font: inherit; font-weight: 700; font-size: 16px; color: var(--ink); background: var(--lilac);
-  border: var(--edge); box-shadow: 4px 4px 0 var(--ink); padding: 10px 20px; cursor: pointer;
+  font: inherit; font-weight: 800; font-size: 16px; color: var(--ink); background: var(--lilac);
+  border: 0; border-radius: 999px; box-shadow: var(--clay-sm); padding: 12px 24px; cursor: pointer;
   text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-  transition: transform 0.08s, box-shadow 0.08s;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
 }
-button:active:not(:disabled), .btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
-button.primary, .btn { background: var(--sage); }
-button.ghost { background: var(--paper); }
+button:hover:not(:disabled), .btn:hover { transform: translateY(-2px); }
+button:active:not(:disabled), .btn:active { transform: translateY(1px) scale(0.98); box-shadow: var(--well); }
+button.primary, .btn { background: var(--mint); }
+button.ghost { background: #fbf7ff; }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
-:focus-visible { outline: 3px dashed var(--ink); outline-offset: 3px; }
+:focus-visible { outline: 3px solid #a98ce0; outline-offset: 3px; }
 textarea, input[type=text] {
-  width: 100%; font: inherit; color: var(--ink); background: var(--paper); border: var(--edge);
-  padding: 12px 14px; resize: vertical; border-radius: 0;
+  width: 100%; font: inherit; font-weight: 600; color: var(--ink); background: rgba(255, 255, 255, 0.6); border: 0;
+  border-radius: 22px; box-shadow: var(--well); padding: 14px 18px; resize: vertical;
 }
+textarea::placeholder { color: var(--ink-2); opacity: 0.7; }
 #script { min-height: 260px; }
-pre { font: 15px/1.5 "IBM Plex Mono", ui-monospace, monospace; background: var(--paper); border: var(--edge); padding: 12px 14px; margin: 8px 0; white-space: pre-wrap; word-break: break-all; }
+pre { font: 15px/1.5 "JetBrains Mono", ui-monospace, monospace; background: rgba(255, 255, 255, 0.6); border-radius: 18px; box-shadow: var(--well); padding: 14px 18px; margin: 10px 0; white-space: pre-wrap; word-break: break-all; }
 .tabs { display: flex; gap: 10px; margin: 14px 0 6px; }
-.tabs button { padding: 6px 14px; font-size: 14px; box-shadow: 3px 3px 0 var(--ink); }
-.voices { display: grid; gap: 10px; margin-bottom: 16px; }
-.voice { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: var(--edge); background: var(--paper); cursor: pointer; }
-.voice.sel { background: var(--butter); box-shadow: 4px 4px 0 var(--ink); }
-.voice .name { font-weight: 700; }
-.voice .x { margin-left: auto; padding: 2px 10px; box-shadow: none; background: var(--paper); }
-.drop { border: 3px dashed var(--ink); background: var(--paper); padding: 24px 16px; text-align: center; }
-.drop strong { display: block; font-size: 18px; margin-bottom: 4px; }
-body.over .drop { background: var(--sage); border-style: solid; }
-.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
-.bar { height: 22px; background: var(--paper); border: var(--edge); margin: 16px 0 8px; }
-.bar i { display: block; height: 100%; width: 0; background: repeating-linear-gradient(45deg, var(--sage) 0 10px, #9fc79a 10px 20px); border-right: 3px solid var(--ink); transition: width 0.4s; }
+.tabs button { padding: 8px 16px; font-size: 14px; }
+.voices { display: grid; gap: 12px; margin-bottom: 16px; }
+.voice { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 22px; background: rgba(255, 255, 255, 0.55); box-shadow: var(--clay-sm); cursor: pointer; }
+.voice.sel { background: var(--peach); }
+.voice .name { font-weight: 800; }
+.voice .x { margin-left: auto; padding: 4px 12px; background: rgba(255, 255, 255, 0.7); }
+.drop { border-radius: 28px; background: rgba(255, 255, 255, 0.45); box-shadow: var(--well); padding: 26px 16px; text-align: center; transition: background 0.2s; }
+.drop strong { display: block; font: 600 19px/1.3 "Fredoka", sans-serif; margin-bottom: 4px; }
+body.over .drop { background: var(--mint); }
+.row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+.bar { height: 18px; border-radius: 999px; background: rgba(255, 255, 255, 0.6); box-shadow: var(--well); margin: 16px 0 8px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--mint); box-shadow: var(--clay-sm); transition: width 0.4s; }
 audio { width: 100%; margin-top: 14px; }
-.err { color: var(--danger); font-weight: 700; }
+.err { color: var(--danger); font-weight: 800; }
 .hidden { display: none !important; }
-label { display: block; font-weight: 700; margin: 14px 0 6px; }
+label { display: block; font-weight: 800; margin: 14px 0 6px; }
 details > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; }
 details > summary::-webkit-details-marker { display: none; }
 details > summary::after { content: "▾"; margin-left: auto; font-size: 20px; }
 details[open] > summary::after { content: "▴"; }
-#install { padding: 14px 22px; }
+#install { padding: 16px 26px; }
 #install[open] > summary { margin-bottom: 8px; }
 @media (min-width: 960px) {
   main { height: 100vh; height: 100dvh; display: flex; flex-direction: column; padding-top: 24px; padding-bottom: 32px; }
@@ -99,7 +103,7 @@ details[open] > summary::after { content: "▴"; }
 <body>
 <main>
   <header>
-    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#1d1a16" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#3a2f4a" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
     <div><h1>Voice Studio</h1><p>Your script, in your voice. Runs on your computer.</p></div>
     <span id="status" class="pill">Checking…</span>
   </header>
