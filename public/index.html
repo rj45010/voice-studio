@@ -9,9 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --page: #f3c64d;
+  --page: #fbf1e6;
   --dot: rgba(34, 30, 24, 0.22);
-  --card: #fdf4ea;
+  --card: #fbf1e6;
   --ink: #221e18;
   --ink-2: #6a6157;
   --yellow: #ffdd2e;
@@ -25,7 +25,7 @@
 * { box-sizing: border-box; }
 body {
   margin: 0; min-height: 100vh; color: var(--ink);
-  background: radial-gradient(var(--dot) 1.4px, transparent 1.6px) 0 0 / 26px 26px, var(--page);
+  background: var(--page);
   font: 17px/1.5 "Josefin Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 main { padding: 24px 16px 48px; }
@@ -36,7 +36,9 @@ header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-
 h1 { font: 700 clamp(30px, 4.5vw, 44px)/1 "Josefin Sans", sans-serif; margin: 0; letter-spacing: 0.01em; }
 h1 em { font-style: normal; color: var(--coral); }
 header p { margin: 6px 0 0; color: var(--ink); opacity: 0.75; }
-.pill { margin-left: auto; font-weight: 700; font-size: 14px; padding: 8px 16px; border-radius: 999px; background: var(--card); border: var(--line); white-space: nowrap; }
+.deco { order: 3; width: 150px; height: 42px; margin-left: auto; }
+@media (max-width: 720px) { .deco { display: none; } }
+.pill { order: 4; font-weight: 700; font-size: 14px; padding: 8px 16px; border-radius: 999px; background: var(--card); border: var(--line); white-space: nowrap; }
 .pill.on { background: var(--sky); }
 .pill.off { background: var(--coral); color: #fff; }
 .grid { display: grid; gap: 24px; }
@@ -108,6 +110,7 @@ details[open] > summary::after { content: "▴"; }
 <main>
   <header>
     <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#221e18" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
+    <svg class="deco" viewBox="0 0 220 60" aria-hidden="true"><rect x="2" y="14" width="44" height="34" fill="#ffdd2e"/><path d="M2 22h44M2 32h44M2 42h44M12 14v34M24 14v34M36 14v34" stroke="#221e18" stroke-width="1.5"/><polygon points="70,50 96,14 122,50" fill="#7a8cf2"/><rect x="104" y="6" width="30" height="30" fill="#74c255" stroke="#221e18" stroke-width="2"/><circle cx="168" cy="30" r="16" fill="none" stroke="#221e18" stroke-width="2"/><rect x="196" y="4" width="14" height="52" fill="#f2675f"/></svg>
     <div><h1>Voice <em>Studio</em></h1><p>Your script, in your voice. Runs on your computer.</p></div>
     <span id="status" class="pill">Checking…</span>
   </header>
