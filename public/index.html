@@ -6,72 +6,86 @@
 <title>Voice Studio</title>
 <meta name="description" content="Type a script, hear it in your own voice. Runs on your computer.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f4f7f7;
-  --surface: #ffffff;
-  --surface-2: #e8f1f1;
-  --ink: #1b2424;
-  --ink-2: #4a5858;
-  --line: #d3dfdf;
-  --teal: #167c80;
-  --teal-ink: #ffffff;
-  --teal-soft: #d4ecec;
-  --danger: #b3261e;
-  --radius: 20px;
+  --bg: #f5efe2;
+  --paper: #fffaf0;
+  --ink: #1d1a16;
+  --ink-2: #5b544a;
+  --butter: #f7dc8c;
+  --sage: #bcd8b7;
+  --rose: #f2b8b0;
+  --sky: #b9d3e8;
+  --lilac: #d6c6ea;
+  --danger: #b5321f;
+  --edge: 3px solid var(--ink);
+  --shadow: 6px 6px 0 var(--ink);
 }
 * { box-sizing: border-box; }
 body {
-  margin: 0; background: var(--bg); color: var(--ink);
-  font: 16px/1.5 "Roboto Flex", system-ui, -apple-system, "Segoe UI", sans-serif;
+  margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+  font: 17px/1.5 "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
-main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
-.mark { width: 44px; height: 44px; border-radius: 50%; background: var(--teal); display: grid; place-items: center; }
-.mark svg { width: 24px; height: 24px; }
-h1 { font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
-header p { margin: 0; color: var(--ink-2); font-size: 14px; }
-.pill { margin-left: auto; font-size: 13px; padding: 6px 12px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
-.pill.on { background: var(--teal-soft); color: var(--teal); }
-.pill.off { background: #fde7e5; color: var(--danger); }
-section { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; margin-bottom: 16px; }
-h2 { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--teal); margin: 0 0 14px; }
-.muted { color: var(--ink-2); font-size: 14px; }
+main { padding: 24px 16px 48px; }
+@media (min-width: 720px) { main { padding: 32px 40px 64px; } }
+header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+.mark { width: 56px; height: 56px; background: var(--butter); border: var(--edge); box-shadow: 4px 4px 0 var(--ink); display: grid; place-items: center; }
+.mark svg { width: 28px; height: 28px; }
+h1 { font: 400 clamp(32px, 5vw, 52px)/1 "Archivo Black", "Space Grotesk", sans-serif; margin: 0; letter-spacing: -0.02em; text-transform: uppercase; }
+header p { margin: 4px 0 0; color: var(--ink-2); }
+.pill { margin-left: auto; font-weight: 700; font-size: 14px; padding: 8px 14px; border: var(--edge); background: var(--paper); box-shadow: 3px 3px 0 var(--ink); white-space: nowrap; }
+.pill.on { background: var(--sage); }
+.pill.off { background: var(--rose); }
+.grid { display: grid; gap: 24px; }
+@media (min-width: 960px) { .grid { grid-template-columns: minmax(320px, 2fr) 3fr; align-items: start; } }
+section { background: var(--paper); border: var(--edge); box-shadow: var(--shadow); padding: 22px; }
+#install { background: var(--rose); margin-bottom: 24px; }
+#voiceCard { background: var(--sky); }
+#scriptCard { background: var(--butter); }
+h2 { font: 400 20px/1.2 "Archivo Black", sans-serif; text-transform: uppercase; margin: 0 0 16px; }
+.muted { color: var(--ink-2); font-size: 15px; }
 button, .btn {
-  font: inherit; font-weight: 500; font-size: 15px; border: 0; border-radius: 999px; padding: 10px 20px;
-  background: var(--teal); color: var(--teal-ink); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  font: inherit; font-weight: 700; font-size: 16px; color: var(--ink); background: var(--lilac);
+  border: var(--edge); box-shadow: 4px 4px 0 var(--ink); padding: 10px 20px; cursor: pointer;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  transition: transform 0.08s, box-shadow 0.08s;
 }
-button.ghost { background: var(--surface-2); color: var(--ink); }
-button:disabled { opacity: 0.45; cursor: not-allowed; }
-button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+button:active:not(:disabled), .btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
+button.primary, .btn { background: var(--sage); }
+button.ghost { background: var(--paper); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+:focus-visible { outline: 3px dashed var(--ink); outline-offset: 3px; }
 textarea, input[type=text] {
-  width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
-  border-radius: 14px; padding: 12px 14px; resize: vertical;
+  width: 100%; font: inherit; color: var(--ink); background: var(--paper); border: var(--edge);
+  padding: 12px 14px; resize: vertical; border-radius: 0;
 }
-pre { font: 14px/1.5 "Roboto Mono", ui-monospace, monospace; background: var(--surface-2); border-radius: 12px; padding: 12px 14px; margin: 8px 0; white-space: pre-wrap; word-break: break-all; }
-.tabs { display: flex; gap: 6px; margin: 12px 0 4px; }
-.tabs button { padding: 6px 14px; font-size: 14px; }
-.voices { display: grid; gap: 8px; margin-bottom: 14px; }
-.voice { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; cursor: pointer; }
-.voice.sel { border-color: var(--teal); background: var(--teal-soft); }
-.voice .name { font-weight: 500; }
-.voice .x { margin-left: auto; background: none; color: var(--ink-2); padding: 4px 8px; }
-.drop { border: 2px dashed var(--line); border-radius: 16px; padding: 22px; text-align: center; color: var(--ink-2); }
-.drop.over { border-color: var(--teal); background: var(--teal-soft); }
-.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
-.bar { height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin: 12px 0 6px; }
-.bar i { display: block; height: 100%; width: 0; background: var(--teal); transition: width 0.4s; }
-audio { width: 100%; margin-top: 12px; }
-.err { color: var(--danger); font-size: 14px; }
+#script { min-height: 260px; }
+pre { font: 15px/1.5 "IBM Plex Mono", ui-monospace, monospace; background: var(--paper); border: var(--edge); padding: 12px 14px; margin: 8px 0; white-space: pre-wrap; word-break: break-all; }
+.tabs { display: flex; gap: 10px; margin: 14px 0 6px; }
+.tabs button { padding: 6px 14px; font-size: 14px; box-shadow: 3px 3px 0 var(--ink); }
+.voices { display: grid; gap: 10px; margin-bottom: 16px; }
+.voice { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: var(--edge); background: var(--paper); cursor: pointer; }
+.voice.sel { background: var(--butter); box-shadow: 4px 4px 0 var(--ink); }
+.voice .name { font-weight: 700; }
+.voice .x { margin-left: auto; padding: 2px 10px; box-shadow: none; background: var(--paper); }
+.drop { border: 3px dashed var(--ink); background: var(--paper); padding: 24px 16px; text-align: center; }
+.drop strong { display: block; font-size: 18px; margin-bottom: 4px; }
+body.over .drop { background: var(--sage); border-style: solid; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
+.bar { height: 22px; background: var(--paper); border: var(--edge); margin: 16px 0 8px; }
+.bar i { display: block; height: 100%; width: 0; background: repeating-linear-gradient(45deg, var(--sage) 0 10px, #9fc79a 10px 20px); border-right: 3px solid var(--ink); transition: width 0.4s; }
+audio { width: 100%; margin-top: 14px; }
+.err { color: var(--danger); font-weight: 700; }
 .hidden { display: none !important; }
-label { display: block; font-size: 14px; color: var(--ink-2); margin: 12px 0 6px; }
+label { display: block; font-weight: 700; margin: 14px 0 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 <main>
   <header>
-    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#1d1a16" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
     <div><h1>Voice Studio</h1><p>Your script, in your voice. Runs on your computer.</p></div>
     <span id="status" class="pill">Checking…</span>
   </header>
@@ -81,14 +95,16 @@ label { display: block; font-size: 14px; color: var(--ink-2); margin: 12px 0 6px
     <p class="muted">Voice Studio couldn't find the engine on this computer. Paste this into a terminal once (about 4.5 GB download), then reload this page.</p>
     <div class="tabs"><button data-os="mac">Mac / Linux</button><button data-os="win" class="ghost">Windows</button></div>
     <pre id="cmd"></pre>
-    <div class="row"><button id="copy" class="ghost">Copy command</button><button id="retry">I've installed it</button></div>
+    <div class="row"><button id="copy" class="ghost">Copy command</button><button id="retry" class="primary">I've installed it</button></div>
   </section>
 
+  <div class="grid">
   <section id="voiceCard">
     <h2>Your voice</h2>
     <div id="voices" class="voices"></div>
     <div id="drop" class="drop">
-      Drop a 3–10 second recording here, or
+      <strong>Drop your voice anywhere on the page</strong>
+      a 3–10 second recording, or
       <div class="row" style="justify-content:center">
         <button id="pick" class="ghost">Choose file</button>
         <button id="rec" class="ghost">● Record</button>
@@ -102,16 +118,16 @@ label { display: block; font-size: 14px; color: var(--ink-2); margin: 12px 0 6px
       <textarea id="vtext" rows="2">Okay, stop scrolling. These four free tools just saved me a hundred dollars a month, and honestly, the third one blew my mind.</textarea>
       <audio id="vprev" controls></audio>
       <p id="vwarn" class="err"></p>
-      <div class="row"><button id="save">Save voice</button><button id="cancel" class="ghost">Cancel</button></div>
+      <div class="row"><button id="save" class="primary">Save voice</button><button id="cancel" class="ghost">Cancel</button></div>
     </div>
     <p class="muted" style="margin:12px 0 0">Saved in this browser only. Nothing is uploaded anywhere.</p>
   </section>
 
-  <section>
+  <section id="scriptCard">
     <h2>Script</h2>
     <textarea id="script" rows="7" placeholder="Type what you want to hear. Write numbers as words."></textarea>
     <div class="row">
-      <button id="go">Generate</button>
+      <button id="go" class="primary">Generate</button>
       <span id="estimate" class="muted"></span>
     </div>
     <div id="progress" class="hidden">
@@ -124,6 +140,7 @@ label { display: block; font-size: 14px; color: var(--ink-2); margin: 12px 0 6px
       <div class="row"><a id="dl" class="btn" download="voice.wav">Download WAV</a></div>
     </div>
   </section>
+  </div>
 </main>
 
 <script>
@@ -218,13 +235,13 @@ function resetNew() {
 
 $("pick").onclick = () => $("file").click();
 $("file").onchange = (e) => e.target.files[0] && takeAudio(e.target.files[0]);
-$("drop").ondragover = (e) => { e.preventDefault(); $("drop").classList.add("over"); };
-$("drop").ondragleave = () => $("drop").classList.remove("over");
-$("drop").ondrop = (e) => {
-  e.preventDefault(); $("drop").classList.remove("over");
+document.addEventListener("dragover", (e) => { e.preventDefault(); document.body.classList.add("over"); });
+document.addEventListener("dragleave", (e) => { if (!e.relatedTarget) document.body.classList.remove("over"); });
+document.addEventListener("drop", (e) => {
+  e.preventDefault(); document.body.classList.remove("over");
   const f = e.dataTransfer.files[0];
   if (f) takeAudio(f);
-};
+});
 $("rec").onclick = async () => {
   if (recorder) { recorder.stop(); return; }
   let stream;
