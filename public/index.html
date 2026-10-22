@@ -5,180 +5,229 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Voice Studio</title>
 <meta name="description" content="Type a script, hear it in your own voice. Runs on your computer.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<meta name="color-scheme" content="light dark">
 <style>
 :root {
-  --page: #c9d3ad;
-  --dot: rgba(34, 30, 24, 0.22);
-  --card: #fbf1e6;
-  --ink: #221e18;
-  --ink-2: #6a6157;
-  --yellow: #ffdd2e;
-  --sky: #7fd0e6;
-  --coral: #f2675f;
-  --green: #74c255;
-  --line: 2px solid var(--ink);
-  --lift: 0 5px 0 var(--ink);
-  --lift-sm: 0 3px 0 var(--ink);
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --fill: #f0f0f3;
+  --fill-2: #e6e6ea;
+  --ink: #1d1d1f;
+  --ink-2: #6e6e73;
+  --ink-3: #a1a1a6;
+  --sep: rgba(0, 0, 0, 0.08);
+  --accent: #e8604c;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(232, 96, 76, 0.12);
+  --good: #34a853;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.06);
+  --radius: 22px;
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --surface: #1c1c1e;
+    --fill: #2c2c2e;
+    --fill-2: #3a3a3c;
+    --ink: #f5f5f7;
+    --ink-2: #a1a1a6;
+    --ink-3: #6e6e73;
+    --sep: rgba(255, 255, 255, 0.1);
+    --accent: #ff7a63;
+    --accent-soft: rgba(255, 122, 99, 0.16);
+    --shadow: none;
+  }
 }
 * { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
 body {
-  margin: 0; min-height: 100vh; color: var(--ink);
-  background: radial-gradient(rgba(34, 30, 24, 0.16) 1.3px, transparent 1.5px) 0 0 / 24px 24px, var(--page);
-  font: 17px/1.5 "Josefin Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 17px/1.47 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: -0.01em;
 }
-main { padding: 24px 16px 48px; }
-@media (min-width: 720px) { main { padding: 28px 40px 48px; } }
-header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
-.mark { width: 58px; height: 58px; border-radius: 50%; background: var(--card); border: var(--line); box-shadow: var(--lift-sm); display: grid; place-items: center; }
-.mark svg { width: 26px; height: 26px; }
-h1 { font: 700 clamp(30px, 4.5vw, 44px)/1 "Josefin Sans", sans-serif; margin: 0; letter-spacing: 0.01em; }
-h1 em { font-style: normal; color: var(--coral); }
-header p { margin: 6px 0 0; color: var(--ink); opacity: 0.75; }
-.deco { order: 3; width: 150px; height: 42px; margin-left: auto; }
-@media (max-width: 720px) { .deco { display: none; } }
-.pill { order: 4; font-weight: 700; font-size: 14px; padding: 8px 16px; border-radius: 999px; background: var(--card); border: var(--line); white-space: nowrap; }
-.pill.on { background: var(--sky); }
-.pill.off { background: var(--coral); color: #fff; }
-.grid { display: grid; gap: 24px; }
-@media (min-width: 960px) { .grid { grid-template-columns: minmax(320px, 2fr) 3fr; align-items: start; } }
-section, #install { background: var(--card); border: var(--line); border-radius: 22px; box-shadow: var(--lift); padding: 24px; }
-#install { margin-bottom: 22px; }
-h2 { font: 700 22px/1.2 "Josefin Sans", sans-serif; margin: 0 0 16px; display: flex; align-items: center; gap: 10px; }
-h2::before { content: ""; width: 14px; height: 14px; border: var(--line); background: var(--yellow); }
-#scriptCard h2::before { border-radius: 50%; background: var(--coral); }
-#install h2::before { width: 0; height: 0; border: 8px solid transparent; border-bottom: 14px solid var(--sky); border-top: 0; background: none; }
+main { max-width: 680px; margin: 0 auto; padding: 20px 16px 64px; }
+nav { display: flex; align-items: center; justify-content: space-between; height: 44px; margin-bottom: 32px; }
+.brand { font-weight: 600; font-size: 17px; display: flex; align-items: center; gap: 8px; }
+.brand svg { width: 20px; height: 20px; color: var(--accent); }
+.status { font-size: 13px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
+.status.on::before { background: var(--good); }
+.status.off::before { background: var(--accent); }
+.hero { text-align: center; margin-bottom: 36px; }
+h1 { font: 700 clamp(40px, 7vw, 56px)/1.05 -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -0.035em; margin: 0; }
+h1 span { color: var(--ink-3); }
+.hero p { margin: 14px 0 0; font-size: 19px; color: var(--ink-2); }
+.card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; }
+h2 { font-size: 13px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.02em; margin: 0 0 12px 4px; }
+.section { margin-bottom: 28px; }
 .muted { color: var(--ink-2); font-size: 15px; }
+.small { font-size: 13px; color: var(--ink-3); margin: 10px 4px 0; }
 button, .btn {
-  font: inherit; font-weight: 700; font-size: 17px; color: var(--ink); background: var(--card);
-  border: var(--line); border-radius: 12px; box-shadow: var(--lift-sm); padding: 10px 22px 8px; cursor: pointer;
-  text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-  transition: transform 0.08s, box-shadow 0.08s;
+  font: inherit; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; border: 0; border-radius: 980px;
+  padding: 9px 18px; cursor: pointer; background: var(--fill); color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;
+  transition: background 0.2s, transform 0.15s var(--ease), opacity 0.2s;
 }
-button:active:not(:disabled), .btn:active { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
-button.primary, .btn { background: var(--yellow); }
-button:disabled { opacity: 0.45; cursor: not-allowed; }
-:focus-visible { outline: 3px dashed var(--ink); outline-offset: 3px; }
+button:hover:not(:disabled), .btn:hover { background: var(--fill-2); }
+button:active:not(:disabled), .btn:active { transform: scale(0.97); }
+.primary { background: var(--accent); color: var(--accent-ink); }
+.primary:hover:not(:disabled) { background: var(--accent); filter: brightness(1.06); }
+.big { font-size: 17px; padding: 13px 28px; }
+button:disabled { opacity: 0.35; cursor: default; }
+:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
 textarea, input[type=text] {
-  width: 100%; font: inherit; color: var(--ink); background: #fffaf3; border: var(--line);
-  border-radius: 14px; padding: 12px 16px; resize: vertical;
+  width: 100%; font: inherit; color: var(--ink); background: var(--fill); border: 0; border-radius: 14px;
+  padding: 12px 14px; resize: vertical; transition: box-shadow 0.2s;
 }
-textarea::placeholder { color: var(--ink-2); }
-#script { min-height: 260px; }
-pre { font: 15px/1.5 "JetBrains Mono", ui-monospace, monospace; background: #fffaf3; border: var(--line); border-radius: 12px; padding: 12px 16px; margin: 10px 0; white-space: pre-wrap; word-break: break-all; }
-.tabs { display: flex; gap: 10px; margin: 14px 0 6px; }
-.tabs button { padding: 6px 14px 4px; font-size: 15px; }
-.tabs button:not(.ghost) { background: var(--sky); }
-.voices { display: grid; gap: 0; margin-bottom: 16px; border: var(--line); border-radius: 16px; overflow: hidden; }
-.voices:empty { display: none; }
-.voice { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #fffaf3; cursor: pointer; }
-.voice + .voice { border-top: var(--line); }
-.voice::before { content: ""; width: 30px; height: 30px; flex: none; border-radius: 50%; border: var(--line); background: var(--sky); }
-.voice.sel { background: #fff3b8; }
-.voice.sel::before { background: var(--yellow); }
-.voice .name { font-weight: 700; }
-.voice .x { margin-left: auto; padding: 2px 10px 0; box-shadow: none; }
-.drop { border: 2px dashed var(--ink); border-radius: 18px; background: #fffaf3; padding: 24px 16px; text-align: center; }
-.drop strong { display: block; font-size: 19px; margin-bottom: 4px; }
-.readme { margin-top: 18px; padding-top: 14px; border-top: 2px dashed rgba(34, 30, 24, 0.25); display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; }
-.readme select { font: inherit; font-weight: 700; font-size: 14px; color: var(--ink); background: var(--card); border: var(--line); border-radius: 10px; padding: 4px 8px; }
-.readme p { flex-basis: 100%; margin: 6px 0 0; font-size: 18px; font-weight: 600; line-height: 1.4; }
-body.over .drop { background: #fff3b8; border-style: solid; }
-.row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
-.bar { height: 18px; border: var(--line); border-radius: 999px; background: #fffaf3; margin: 16px 0 8px; overflow: hidden; }
-.bar i { display: block; height: 100%; width: 0; background: var(--green); border-right: var(--line); transition: width 0.4s; }
+textarea:focus, input[type=text]:focus { outline: 0; box-shadow: 0 0 0 3px var(--accent-soft); }
+textarea::placeholder { color: var(--ink-3); }
+#script { min-height: 200px; font-size: 19px; line-height: 1.5; background: transparent; padding: 4px; border-radius: 0; resize: none; }
+#script:focus { box-shadow: none; }
+.seg { display: inline-flex; background: var(--fill); border-radius: 10px; padding: 2px; }
+.seg button { border-radius: 8px; padding: 6px 14px; font-size: 13px; background: transparent; }
+.seg button:hover:not(:disabled) { background: transparent; }
+.seg button.on { background: var(--surface); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+.list { border-radius: 14px; overflow: hidden; background: var(--fill); margin-bottom: 16px; }
+.list:empty { display: none; }
+.voice { display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer; }
+.voice + .voice { box-shadow: inset 0 1px 0 var(--sep); }
+.voice .tick { width: 22px; height: 22px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--ink-3); flex: none; display: grid; place-items: center; }
+.voice.sel .tick { background: var(--accent); box-shadow: none; }
+.voice.sel .tick::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+.voice .name { font-weight: 500; }
+.voice .x { margin-left: auto; padding: 4px 10px; font-size: 13px; background: transparent; color: var(--ink-3); }
+.voice .x:hover { color: var(--accent); background: transparent; }
+.drop { border-radius: 16px; border: 1.5px dashed var(--ink-3); padding: 22px 18px; text-align: center; transition: background 0.2s, border-color 0.2s; }
+body.over .drop { background: var(--accent-soft); border-color: var(--accent); }
+.drop .row { justify-content: center; }
+.read { margin-top: 18px; padding-top: 18px; box-shadow: inset 0 1px 0 var(--sep); }
+.read p { font-size: 19px; font-weight: 500; line-height: 1.4; margin: 12px auto 0; max-width: 32ch; }
+canvas { display: block; width: 100%; height: 56px; margin-top: 14px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+.foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--sep); }
+label { display: block; font-size: 13px; color: var(--ink-2); margin: 16px 4px 6px; }
 audio { width: 100%; margin-top: 14px; }
-.err { color: var(--coral); font-weight: 700; }
+.err { color: var(--accent); font-size: 15px; margin: 10px 4px 0; }
+.err:empty { display: none; }
+pre { font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace; background: var(--fill); border-radius: 12px; padding: 12px 14px; margin: 14px 0 0; white-space: pre-wrap; word-break: break-all; }
+details summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: 600; }
+details summary::-webkit-details-marker { display: none; }
+details summary::after { content: "›"; margin-left: auto; font-size: 22px; color: var(--ink-3); transition: transform 0.25s var(--ease); }
+details[open] summary::after { transform: rotate(90deg); }
+details summary .muted { font-weight: 400; }
 .hidden { display: none !important; }
-label { display: block; font-weight: 700; margin: 14px 0 6px; }
-details > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; }
-details > summary::-webkit-details-marker { display: none; }
-details > summary::after { content: "▾"; margin-left: auto; font-size: 20px; }
-details[open] > summary::after { content: "▴"; }
-#install { padding: 14px 24px; }
-#install[open] > summary { margin-bottom: 8px; }
-@media (min-width: 960px) {
-  main { height: 100vh; height: 100dvh; display: flex; flex-direction: column; padding-top: 24px; padding-bottom: 32px; }
-  header { margin-bottom: 20px; }
-  .grid { flex: 1; min-height: 0; align-items: stretch; }
-  .grid > section { display: flex; flex-direction: column; min-height: 0; overflow: auto; }
-  #script { flex: 1; min-height: 120px; resize: none; }
-  #install { position: relative; z-index: 2; }
+.sheet { position: fixed; inset: 0; z-index: 10; display: grid; place-items: end center; background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease); }
+.sheet.open { opacity: 1; pointer-events: auto; }
+.sheet .panel { width: min(680px, 100%); background: var(--surface); border-radius: 28px 28px 0 0; padding: 32px 24px calc(32px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform 0.45s var(--ease); text-align: center; }
+.sheet.open .panel { transform: none; }
+@media (min-width: 720px) { .sheet { place-items: center; } .sheet .panel { border-radius: 28px; transform: translateY(24px) scale(0.98); } }
+.sheet h3 { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; margin: 0; }
+.bar { height: 6px; border-radius: 3px; background: var(--fill); overflow: hidden; margin: 24px 0 12px; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width 0.6s var(--ease); }
+@media (min-width: 980px) {
+  main { max-width: 1240px; height: 100vh; height: 100dvh; padding: 16px 40px 32px; display: grid; grid-template-columns: 400px 1fr; grid-template-rows: auto auto 1fr; column-gap: 40px; }
+  nav { grid-column: 1 / -1; margin-bottom: 12px; }
+  .hero { grid-column: 1; text-align: left; margin: 8px 0 28px; }
+  h1 { font-size: 48px; }
+  .hero p { font-size: 17px; }
+  #install { grid-column: 2; grid-row: 2; align-self: start; margin-bottom: 20px; }
+  #voiceSection { grid-column: 1; grid-row: 3; overflow: auto; min-height: 0; margin: 0; }
+  #scriptSection { grid-column: 2; grid-row: 2 / 4; display: flex; flex-direction: column; min-height: 0; margin: 0; }
+  #install:not(.hidden) ~ #scriptSection { grid-row: 3; }
+  #scriptSection .card { flex: 1; display: flex; flex-direction: column; min-height: 0; margin: 0; }
+  #script { flex: 1; min-height: 0; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+@keyframes fade { from { opacity: 0; } }
+.hero, #install, .section { animation: rise 0.7s var(--ease) both; }
+#install { animation-delay: 0.05s; }
+#voiceSection { animation-delay: 0.1s; }
+#scriptSection { animation-delay: 0.18s; }
+#drop, #newVoice, .voice, #result, #progress { animation: fade 0.35s var(--ease) both; }
+.status.checking::before { animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.3; } }
+#go:not(:disabled) { box-shadow: 0 6px 18px -6px var(--accent); }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { *, .sheet .panel { transition: none !important; } }
 </style>
 </head>
 <body>
 <main>
-  <header>
-    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#221e18" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
-    <svg class="deco" viewBox="0 0 220 60" aria-hidden="true"><rect x="2" y="14" width="44" height="34" fill="#ffdd2e"/><path d="M2 22h44M2 32h44M2 42h44M12 14v34M24 14v34M36 14v34" stroke="#221e18" stroke-width="1.5"/><polygon points="70,50 96,14 122,50" fill="#7a8cf2"/><rect x="104" y="6" width="30" height="30" fill="#74c255" stroke="#221e18" stroke-width="2"/><circle cx="168" cy="30" r="16" fill="none" stroke="#221e18" stroke-width="2"/><rect x="196" y="4" width="14" height="52" fill="#f2675f"/></svg>
-    <div><h1>Voice <em>Studio</em></h1><p>Your script, in your voice. Runs on your computer.</p></div>
-    <span id="status" class="pill">Checking…</span>
-  </header>
+  <nav>
+    <div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>Voice Studio</div>
+    <span id="status" class="status checking">Checking…</span>
+  </nav>
 
-  <details id="install" class="hidden" open>
-    <summary><h2 style="margin:0">Install once</h2><span class="muted">engine not found on this computer</span></summary>
-    <p class="muted" style="margin:0">Voice Studio couldn't find the engine on this computer. Paste this into a terminal once (about 4.5 GB download), then reload this page.</p>
-    <div class="tabs"><button data-os="mac">Mac / Linux</button><button data-os="win" class="ghost">Windows</button></div>
+  <div class="hero">
+    <h1>Your script.<br><span>Your voice.</span></h1>
+    <p>Generated on your own computer. Nothing is uploaded.</p>
+  </div>
+
+  <details id="install" class="card hidden" open>
+    <summary>Install once <span class="muted">· about 4.5 GB</span></summary>
+    <p class="muted" style="margin:12px 0 0">Voice Studio runs on this computer, so it needs its engine. Paste this into Terminal once, then come back.</p>
+    <div class="row"><div class="seg"><button data-os="mac" class="on">Mac / Linux</button><button data-os="win">Windows</button></div></div>
     <pre id="cmd"></pre>
-    <div class="row"><button id="copy">Copy command</button><button id="retry" class="primary">I've installed it</button></div>
+    <div class="row"><button id="copy">Copy</button><button id="retry" class="primary">I've installed it</button></div>
   </details>
 
-  <div class="grid">
-  <section id="voiceCard">
-    <h2>Your voice</h2>
-    <div id="voices" class="voices"></div>
-    <div id="drop" class="drop">
-      <strong>Drop your voice anywhere on the page</strong>
-      a 3–10 second recording, or
-      <div class="row" style="justify-content:center">
-        <button id="pick">Choose file</button>
-        <button id="rec">● Record</button>
+  <div class="section" id="voiceSection">
+    <h2>Voice</h2>
+    <div class="card">
+      <div id="voices" class="list"></div>
+      <div id="drop" class="drop">
+        <div class="muted">Drop a 3–10 second recording anywhere, or</div>
+        <div class="row"><button id="pick">Choose file</button><button id="rec" class="primary">Record</button></div>
+        <input id="file" type="file" accept="audio/*" class="hidden">
+        <canvas id="wave" class="hidden" width="600" height="56"></canvas>
+        <div class="read">
+          <div class="seg" id="lineStyle">
+            <button data-line="energy" class="on">Reel energy</button><button data-line="calm">Calm</button><button data-line="hinglish">Hinglish</button>
+          </div>
+          <p id="readLine"></p>
+        </div>
       </div>
-      <input id="file" type="file" accept="audio/*" class="hidden">
-      <div class="readme">
-        <span class="muted">To record, read this aloud in the tone you want:</span>
-        <select id="lineStyle" aria-label="Recording style">
-          <option value="energy">Reel energy</option>
-          <option value="calm">Calm</option>
-          <option value="hinglish">Hinglish</option>
-        </select>
-        <p id="readLine"></p>
+      <div id="newVoice" class="hidden">
+        <audio id="vprev" controls></audio>
+        <label for="vname">Name</label>
+        <input id="vname" type="text" value="Me">
+        <label for="vtext">What you said, word for word</label>
+        <textarea id="vtext" rows="2"></textarea>
+        <p id="vwarn" class="err"></p>
+        <div class="row"><button id="save" class="primary">Save voice</button><button id="cancel">Cancel</button></div>
       </div>
     </div>
-    <div id="newVoice" class="hidden">
-      <label for="vname">Name</label>
-      <input id="vname" type="text" value="Me">
-      <label for="vtext">What you said in the recording, word for word</label>
-      <textarea id="vtext" rows="2"></textarea>
-      <audio id="vprev" controls></audio>
-      <p id="vwarn" class="err"></p>
-      <div class="row"><button id="save" class="primary">Save voice</button><button id="cancel" class="ghost">Cancel</button></div>
-    </div>
-    <p class="muted" style="margin:12px 0 0">Saved in this browser only. Nothing is uploaded anywhere.</p>
-  </section>
+    <p class="small">Saved in this browser only.</p>
+  </div>
 
-  <section id="scriptCard">
+  <div class="section" id="scriptSection">
     <h2>Script</h2>
-    <textarea id="script" rows="7" placeholder="Type what you want to hear. Write numbers as words."></textarea>
-    <div class="row">
-      <button id="go" class="primary">Generate</button>
-      <span id="estimate" class="muted"></span>
+    <div class="card">
+      <textarea id="script" placeholder="Type what you want to hear. Write numbers as words."></textarea>
+      <div class="foot">
+        <span id="estimate" class="muted"></span>
+        <button id="go" class="primary big">Generate</button>
+      </div>
+      <p id="err" class="err"></p>
     </div>
-    <div id="progress" class="hidden">
-      <div class="bar"><i id="fill"></i></div>
-      <span id="ptext" class="muted"></span>
-    </div>
-    <p id="err" class="err"></p>
-    <div id="result" class="hidden">
-      <audio id="out" controls></audio>
-      <div class="row"><a id="dl" class="btn" download="voice.wav">Download WAV</a></div>
-    </div>
-  </section>
   </div>
 </main>
+
+<div id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="panel">
+    <h3 id="sheetTitle">Generating</h3>
+    <div id="progress">
+      <div class="bar"><i id="fill"></i></div>
+      <div id="ptext" class="muted"></div>
+    </div>
+    <div id="result" class="hidden">
+      <audio id="out" controls></audio>
+      <div class="row" style="justify-content:center"><a id="dl" class="btn primary" download="voice.wav">Download</a><button id="close">Done</button></div>
+    </div>
+    <p id="serr" class="err"></p>
+  </div>
+</div>
 
 <script>
 const API = "http://127.0.0.1:7861";
@@ -186,8 +235,13 @@ const INSTALL = {
   mac: "curl -fsSL https://voice-studio.seemslegit.workers.dev/install.sh | sh",
   win: "irm https://voice-studio.seemslegit.workers.dev/install.ps1 | iex",
 };
+const LINES = {
+  energy: "Okay, stop scrolling. These four free tools just saved me a hundred dollars a month, and honestly, the third one blew my mind.",
+  calm: "Here's how it works. You record a short sample, type your script, and it reads it back in your own voice.",
+  hinglish: "Dekho, yeh chaar free tools hain jo mere har mahine ke sau dollar bachaate hain. Teesra wala toh kamaal hai.",
+};
 const $ = (id) => document.getElementById(id);
-let engine = null, selected = null, pending = null, recorder = null;
+let engine = null, selected = null, pending = null, recorder = null, line = "energy";
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -218,7 +272,7 @@ async function renderVoices() {
   for (const v of list) {
     const el = document.createElement("div");
     el.className = "voice" + (v.id === selected ? " sel" : "");
-    el.innerHTML = `<span class="name"></span><span class="muted"></span><button class="x" title="Delete">✕</button>`;
+    el.innerHTML = `<span class="tick"></span><span class="name"></span><span class="muted"></span><button class="x" aria-label="Delete">Delete</button>`;
     el.querySelector(".name").textContent = v.name;
     el.querySelector(".muted").textContent = `${v.seconds.toFixed(1)}s`;
     el.onclick = () => { selected = v.id; store.set("voice", v.id); renderVoices(); };
@@ -257,15 +311,17 @@ async function takeAudio(blob) {
       if (!res.ok) throw new Error((await res.json()).error);
       pending = await toWav(await res.blob());
     } catch (e) {
+      pending = null;
       $("vwarn").textContent = engine ? `Couldn't read that file: ${e.message}` : "Couldn't read that file. Try a WAV, M4A or MP3.";
       $("newVoice").classList.remove("hidden");
+      $("drop").classList.add("hidden");
       return;
     }
   }
   $("vprev").src = URL.createObjectURL(new Blob([pending.wav], { type: "audio/wav" }));
   const s = pending.seconds;
   $("vwarn").textContent = s < 3 ? `Only ${s.toFixed(1)}s. Record at least 3 seconds.` :
-    s > 12 ? `${s.toFixed(1)}s is long. 3–10 seconds clones better; longer clips slow every generation.` : "";
+    s > 12 ? `${s.toFixed(1)}s is long. 3–10 seconds clones better and keeps every generation faster.` : "";
   $("newVoice").classList.remove("hidden");
   $("drop").classList.add("hidden");
 }
@@ -277,13 +333,15 @@ function resetNew() {
   $("vwarn").textContent = "";
 }
 
-const LINES = {
-  energy: "Okay, stop scrolling. These four free tools just saved me a hundred dollars a month, and honestly, the third one blew my mind.",
-  calm: "Here's how it works. You record a short sample, type your script, and it reads it back in your own voice.",
-  hinglish: "Dekho, yeh chaar free tools hain jo mere har mahine ke sau dollar bachaate hain. Teesra wala toh kamaal hai.",
-};
-$("lineStyle").onchange = () => { $("readLine").textContent = `“${LINES[$("lineStyle").value]}”`; };
-$("lineStyle").onchange();
+function seg(group, onPick) {
+  group.querySelectorAll("button").forEach((b) => b.onclick = () => {
+    group.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+    onPick(b);
+  });
+}
+seg($("lineStyle"), (b) => { line = b.dataset.line; $("readLine").textContent = `“${LINES[line]}”`; });
+$("readLine").textContent = `“${LINES[line]}”`;
+
 $("pick").onclick = () => { $("vtext").value = ""; $("file").click(); };
 $("file").onchange = (e) => e.target.files[0] && takeAudio(e.target.files[0]);
 document.addEventListener("dragover", (e) => { e.preventDefault(); document.body.classList.add("over"); });
@@ -291,24 +349,50 @@ document.addEventListener("dragleave", (e) => { if (!e.relatedTarget) document.b
 document.addEventListener("drop", (e) => {
   e.preventDefault(); document.body.classList.remove("over");
   const f = e.dataTransfer.files[0];
-  if (f) takeAudio(f);
+  if (f) { $("vtext").value = ""; takeAudio(f); }
 });
+
+function drawWave(stream) {
+  const ac = new AudioContext(), an = ac.createAnalyser();
+  an.fftSize = 1024;
+  ac.createMediaStreamSource(stream).connect(an);
+  const data = new Uint8Array(an.fftSize), c = $("wave"), g = c.getContext("2d");
+  const color = getComputedStyle(document.body).getPropertyValue("--accent");
+  const frame = () => {
+    if (!recorder) { ac.close(); return; }
+    an.getByteTimeDomainData(data);
+    g.clearRect(0, 0, c.width, c.height);
+    g.fillStyle = color;
+    const bars = 60, step = Math.floor(data.length / bars);
+    for (let i = 0; i < bars; i++) {
+      let peak = 0;
+      for (let j = 0; j < step; j++) peak = Math.max(peak, Math.abs(data[i * step + j] - 128));
+      const h = Math.max(3, (peak / 128) * c.height);
+      g.fillRect(i * (c.width / bars) + 2, (c.height - h) / 2, c.width / bars - 4, h);
+    }
+    requestAnimationFrame(frame);
+  };
+  frame();
+}
+
 $("rec").onclick = async () => {
   if (recorder) { recorder.stop(); return; }
   let stream;
   try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
-  catch { $("vwarn").textContent = "Microphone permission was denied."; return; }
+  catch { $("err").textContent = "Microphone permission was denied."; return; }
   const chunks = [];
   recorder = new MediaRecorder(stream);
   recorder.ondataavailable = (e) => chunks.push(e.data);
   recorder.onstop = () => {
     stream.getTracks().forEach((t) => t.stop());
-    recorder = null; $("rec").textContent = "● Record";
-    $("vtext").value = LINES[$("lineStyle").value];
+    recorder = null;
+    $("rec").textContent = "Record"; $("wave").classList.add("hidden"); $("pick").disabled = false;
+    $("vtext").value = LINES[line];
     takeAudio(new Blob(chunks, { type: chunks[0]?.type }));
   };
   recorder.start();
-  $("rec").textContent = "■ Stop";
+  $("rec").textContent = "Stop"; $("wave").classList.remove("hidden"); $("pick").disabled = true;
+  drawWave(stream);
 };
 $("cancel").onclick = resetNew;
 $("save").onclick = async () => {
@@ -332,10 +416,18 @@ function estimateSeconds(chars) {
 function updateEstimate() {
   const chars = $("script").value.trim().length;
   const est = estimateSeconds(chars);
-  $("estimate").textContent = chars && est != null ? `About ${fmt(est)} on this computer` : "";
+  $("estimate").textContent = !engine ? "" : !selected ? "Add a voice first" : chars && est != null ? `About ${fmt(est)} on this computer` : "";
   $("go").disabled = !engine || !selected || !chars;
 }
 $("script").oninput = () => { store.set("draft", $("script").value); updateEstimate(); };
+
+function openSheet() {
+  $("sheetTitle").textContent = "Generating";
+  $("progress").classList.remove("hidden"); $("result").classList.add("hidden");
+  $("serr").textContent = ""; $("fill").style.width = "0";
+  $("sheet").classList.add("open");
+}
+$("close").onclick = () => $("sheet").classList.remove("open");
 
 $("go").onclick = async () => {
   const voice = await tx("readonly", (s) => s.get(selected));
@@ -343,38 +435,43 @@ $("go").onclick = async () => {
   const bytes = new Uint8Array(voice.wav);
   let bin = "";
   for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  const b64 = btoa(bin);
-  $("err").textContent = ""; $("result").classList.add("hidden");
+  $("err").textContent = "";
   $("go").disabled = true;
   let res;
   try {
     res = await fetch(`${API}/api/jobs`, {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, ref_text: voice.text, ref_audio: b64 }),
+      body: JSON.stringify({ text, ref_text: voice.text, ref_audio: btoa(bin) }),
     });
   } catch { $("err").textContent = "Lost connection to the engine."; return checkEngine(); }
   const job = await res.json();
   if (!res.ok) { $("err").textContent = job.error; $("go").disabled = false; return; }
   const total = estimateSeconds(text.length), started = Date.now();
-  $("progress").classList.remove("hidden");
+  openSheet();
+  const fail = (msg) => {
+    $("sheetTitle").textContent = "Something went wrong";
+    $("serr").textContent = msg; $("progress").classList.add("hidden");
+    $("result").classList.remove("hidden"); $("out").classList.add("hidden"); $("dl").classList.add("hidden");
+    updateEstimate();
+  };
   const tick = async () => {
     let s;
     try { s = await (await fetch(`${API}/api/jobs/${job.id}`)).json(); }
-    catch { $("err").textContent = "Lost connection to the engine."; return; }
+    catch { return fail("Lost connection to the engine."); }
     const elapsed = (Date.now() - started) / 1000;
     $("fill").style.width = `${Math.min(99, (s.done / s.total) * 100 || (elapsed / total) * 100)}%`;
-    if (s.status === "error") {
-      $("err").textContent = s.error; $("progress").classList.add("hidden"); updateEstimate(); return;
-    }
+    if (s.status === "error") return fail(s.error);
     if (s.status === "done") {
-      const blob = await (await fetch(`${API}/api/jobs/${job.id}/audio`)).blob();
-      const url = URL.createObjectURL(blob);
+      const url = URL.createObjectURL(await (await fetch(`${API}/api/jobs/${job.id}/audio`)).blob());
       $("out").src = url; $("dl").href = url;
+      $("out").classList.remove("hidden"); $("dl").classList.remove("hidden");
+      $("sheetTitle").textContent = "Ready";
       $("progress").classList.add("hidden"); $("result").classList.remove("hidden");
+      $("out").play().catch(() => {});
       checkEngine(); return;
     }
     const phase = s.status === "queued" ? "Loading the voice model" : `Sentence ${s.done + 1} of ${s.total}`;
-    $("ptext").textContent = `${phase} · ${fmt(elapsed)} elapsed · about ${fmt(total - elapsed)} left`;
+    $("ptext").textContent = `${phase} · about ${fmt(total - elapsed)} left`;
     setTimeout(tick, 2000);
   };
   tick();
@@ -383,13 +480,13 @@ $("go").onclick = async () => {
 async function checkEngine() {
   try {
     engine = await (await fetch(`${API}/api/status`)).json();
-    $("status").textContent = `Engine ready · ${engine.device.toUpperCase()}`;
-    $("status").className = "pill on";
+    $("status").textContent = "Engine ready";
+    $("status").className = "status on";
     $("install").classList.add("hidden");
   } catch {
     engine = null;
-    $("status").textContent = "Engine not found";
-    $("status").className = "pill off";
+    $("status").textContent = "Engine not installed";
+    $("status").className = "status off";
     $("install").classList.remove("hidden");
     $("install").open = !store.get("installSeen");
     store.set("installSeen", "1");
@@ -397,12 +494,10 @@ async function checkEngine() {
   updateEstimate();
 }
 
-document.querySelectorAll("[data-os]").forEach((b) => b.onclick = () => {
-  document.querySelectorAll("[data-os]").forEach((x) => x.classList.toggle("ghost", x !== b));
-  $("cmd").textContent = INSTALL[b.dataset.os];
-});
-$("cmd").textContent = navigator.platform.startsWith("Win") ? INSTALL.win : INSTALL.mac;
-if (navigator.platform.startsWith("Win")) document.querySelector("[data-os=win]").click();
+const isWin = navigator.platform.startsWith("Win");
+$("cmd").textContent = isWin ? INSTALL.win : INSTALL.mac;
+seg(document.querySelector("#install .seg"), (b) => { $("cmd").textContent = INSTALL[b.dataset.os]; });
+if (isWin) document.querySelector("[data-os=win]").click();
 $("copy").onclick = () => navigator.clipboard.writeText($("cmd").textContent).then(() => $("copy").textContent = "Copied");
 $("retry").onclick = checkEngine;
 
