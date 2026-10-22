@@ -146,6 +146,11 @@ pre { font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace; background: var(
 .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width 0.6s var(--ease); }
 #result .row { margin-top: 10px; }
 .hidden { display: none !important; }
+#mobile { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 32px 24px; text-align: center; }
+#mobile > svg { width: 56px; height: 56px; color: var(--accent); }
+#mobile h1 { font-size: 34px; }
+#mobile p { margin: 0; max-width: 30ch; color: var(--ink-2); }
+body.phone main { display: none; }
 .section { margin-bottom: 20px; }
 
 @media (min-width: 980px) {
@@ -175,6 +180,13 @@ pre { font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace; background: var(
 </style>
 </head>
 <body>
+<div id="mobile" class="hidden">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+  <h1>Your script. <span>Your voice.</span></h1>
+  <p>Voice Studio runs on your own computer, so it works on a Mac, Windows or Linux PC, not on phones.</p>
+  <p class="muted">Open this page on your computer:</p>
+  <button id="share" class="primary big">Copy link</button>
+</div>
 <main>
   <header>
     <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>Your script. <span>Your voice.</span></h1>
@@ -530,6 +542,13 @@ async function checkEngine() {
   updateEstimate();
 }
 
+if (matchMedia("(pointer: coarse) and (max-width: 900px)").matches || /iPhone|iPad|Android/i.test(navigator.userAgent)) {
+  document.body.classList.add("phone"); $("mobile").classList.remove("hidden");
+  $("share").onclick = async () => {
+    try { await navigator.share({ title: "Voice Studio", url: location.origin }); }
+    catch { navigator.clipboard?.writeText(location.origin).then(() => $("share").textContent = "Link copied"); }
+  };
+}
 const isWin = navigator.platform.startsWith("Win");
 $("cmd").textContent = isWin ? INSTALL.win : INSTALL.mac;
 seg(document.querySelector("#install .seg"), (b) => { $("cmd").textContent = INSTALL[b.dataset.os]; });
