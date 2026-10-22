@@ -106,12 +106,20 @@ textarea::placeholder { color: var(--ink-3); }
 .voice .x { margin-left: auto; padding: 4px 10px; font-size: 13px; background: transparent; color: var(--ink-3); }
 .voice .x:hover { color: var(--accent); background: transparent; }
 #addVoice { width: 100%; }
-.drop { border-radius: 16px; border: 1.5px dashed var(--ink-3); padding: 20px 16px; text-align: center; transition: background 0.2s, border-color 0.2s; }
-body.over .drop { background: var(--accent-soft); border-color: var(--accent); }
-.drop .row { justify-content: center; }
-.read { margin-top: 16px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--sep); }
-.read p { font-size: 18px; font-weight: 500; line-height: 1.4; margin: 12px auto 0; max-width: 34ch; }
-canvas { display: block; width: 100%; height: 48px; margin-top: 12px; }
+.drop { display: flex; flex-direction: column; gap: 14px; }
+.prompt { background: var(--fill); border-radius: 18px; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
+.prompt .seg { background: var(--fill-2); }
+.eyebrow { font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+#readLine { font-size: 20px; font-weight: 500; line-height: 1.45; letter-spacing: -0.015em; margin: 0; max-width: 30ch; transition: opacity 0.25s var(--ease); }
+.wide { width: 100%; }
+.wide svg { width: 18px; height: 18px; }
+#rec.recording { background: var(--ink); }
+.alt { margin: 0; text-align: center; font-size: 14px; color: var(--ink-3); }
+.link { background: none; padding: 0; font-size: 14px; color: var(--accent); font-weight: 500; }
+.link:hover:not(:disabled) { background: none; text-decoration: underline; }
+canvas { display: block; width: 100%; height: 40px; }
+#voiceSection .card { transition: box-shadow 0.25s var(--ease); }
+body.over #voiceSection .card { box-shadow: 0 0 0 2px var(--accent), var(--shadow); }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
 .foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--sep); }
 label { display: block; font-size: 13px; color: var(--ink-2); margin: 14px 4px 6px; }
@@ -136,14 +144,14 @@ pre { font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace; background: var(
   .section { display: flex; flex-direction: column; min-height: 0; margin: 0; }
   .section > .card { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: auto; scrollbar-width: none; }
   .section > .card::-webkit-scrollbar { display: none; }
-  #voiceSection .drop { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  #voiceSection .drop { flex: 1; min-height: 0; }
+  #voiceSection .prompt { flex: 1; }
   #script { flex: 1; min-height: 80px; }
 }
 @media (min-width: 980px) and (max-height: 820px) {
   .card { padding: 18px; }
-  .drop { padding: 14px 12px; }
-  .read { margin-top: 12px; padding-top: 12px; }
-  .read p { font-size: 16px; }
+  .prompt { padding: 16px; gap: 10px; }
+  #readLine { font-size: 17px; }
   label { margin-top: 10px; }
 }
 
@@ -178,16 +186,17 @@ pre { font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace; background: var(
       <div id="voices" class="list"></div>
       <button id="addVoice" class="hidden">+ Add another voice</button>
       <div id="drop" class="drop">
-        <div class="muted">Drop a 3–10 second recording anywhere, or</div>
-        <div class="row"><button id="pick">Choose file</button><button id="rec" class="primary">Record</button></div>
-        <input id="file" type="file" accept="audio/*" class="hidden">
-        <canvas id="wave" class="hidden" width="600" height="48"></canvas>
-        <div class="read">
+        <div class="prompt">
+          <span class="eyebrow">Read this aloud</span>
           <div class="seg" id="lineStyle">
             <button data-line="energy" class="on">Lively</button><button data-line="calm">Calm</button><button data-line="hinglish">Hinglish</button>
           </div>
           <p id="readLine"></p>
+          <canvas id="wave" class="hidden" width="600" height="48"></canvas>
         </div>
+        <button id="rec" class="primary big wide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span id="recLabel">Record</span></button>
+        <p class="alt">or <button id="pick" class="link">choose a file</button> · or drop one anywhere</p>
+        <input id="file" type="file" accept="audio/*" class="hidden">
       </div>
       <div id="newVoice" class="hidden">
         <audio id="vprev" controls></audio>
@@ -235,7 +244,7 @@ const LINES = {
   hinglish: "Arre, seriously? Maine socha tha this will be super tough, but honestly, yeh toh kaafi easy nikla!",
 };
 const $ = (id) => document.getElementById(id);
-let engine = null, selected = null, pending = null, recorder = null, line = "energy", adding = false, running = false;
+let engine = null, selected = null, pending = null, recorder = null, line = "energy", adding = false, running = false, timer = null;
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -405,11 +414,14 @@ $("rec").onclick = async () => {
   recorder.onstop = () => {
     stream.getTracks().forEach((t) => t.stop());
     recorder = null;
-    $("rec").textContent = "Record"; $("wave").classList.add("hidden"); $("pick").disabled = false;
+    clearInterval(timer); $("recLabel").textContent = "Record"; $("rec").classList.remove("recording");
+    $("wave").classList.add("hidden"); $("pick").disabled = false;
     takeAudio(new Blob(chunks, { type: chunks[0]?.type }), LINES[line]);
   };
   recorder.start();
-  $("rec").textContent = "Stop"; $("wave").classList.remove("hidden"); $("pick").disabled = true;
+  const t0 = Date.now(), tickLabel = () => { const sec = Math.floor((Date.now() - t0) / 1000); $("recLabel").textContent = `Stop · 0:${String(sec).padStart(2, "0")}`; };
+  tickLabel(); timer = setInterval(tickLabel, 250);
+  $("rec").classList.add("recording"); $("wave").classList.remove("hidden"); $("pick").disabled = true;
   drawWave(stream);
 };
 $("cancel").onclick = resetNew;
