@@ -6,278 +6,665 @@
 <title>Voice Studio</title>
 <meta name="description" content="Type a script, hear it in your own voice. Runs on your computer.">
 <meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700;9..40,800&family=VT323&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5f5f7;
-  --surface: #ffffff;
-  --fill: #f0f0f3;
-  --fill-2: #e6e6ea;
-  --ink: #1d1d1f;
-  --ink-2: #6e6e73;
-  --ink-3: #a1a1a6;
-  --sep: rgba(0, 0, 0, 0.08);
-  --accent: #e8604c;
-  --accent-soft: rgba(232, 96, 76, 0.12);
-  --good: #34a853;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.06);
+  --body: #ebe4d6;
+  --body-hi: #f6f1e7;
+  --body-lo: #d6cdbb;
+  --edge: #b9ae98;
+  --ink: #2c2721;
+  --ink-2: #5a5247;
+  --ink-3: #8a8070;
+  --accent: #d9583b;
+  --accent-ink: #9e3820;
+  --accent-soft: rgba(217, 88, 59, 0.14);
+  --good: #3f9a5a;
+  --phos: #9ff5cf;
+  --phos-dim: #5fbf98;
+  --crt: #0f2723;
+  --m-normal: #b7d3ea;
+  --m-excited: #f3d98c;
+  --m-calm: #b9d7b0;
+  --m-deadpan: #cfc4ea;
+  --m-serious: #f2b9a8;
+  --m-curious: #f4c3d6;
+  --mono: "Space Mono", ui-monospace, Menlo, monospace;
+  --pixel: "VT323", ui-monospace, monospace;
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --shadow: 0 30px 60px -30px rgba(60, 30, 20, 0.55), 0 8px 18px -8px rgba(60, 30, 20, 0.3);
 }
 * { box-sizing: border-box; }
 html { -webkit-font-smoothing: antialiased; }
 body {
-  margin: 0; background: var(--bg); color: var(--ink);
-  font: 17px/1.47 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
-  letter-spacing: -0.01em;
+  margin: 0; color: var(--ink); min-height: 100vh;
+  font: 500 16px/1.45 "DM Sans", -apple-system, system-ui, sans-serif;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 115%, #6d4d4a 0 40%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 15% 100%, #8a5f55 0 35%, transparent 70%),
+    linear-gradient(#f2c9a6 0%, #dca192 40%, #a77a86 75%, #6f5468 100%) fixed;
 }
-main { width: 100%; max-width: 2400px; margin: 0 auto; padding: 16px; }
-.status {
-  font-size: 13px; font-weight: 500; color: var(--ink-2); display: inline-flex; align-items: center; gap: 8px;
-  padding: 7px 14px 7px 12px; border-radius: 980px; background: var(--surface); box-shadow: var(--shadow);
-  transition: background 0.5s var(--ease), color 0.5s var(--ease);
+.hidden { display: none !important; }
+button, .btn { font: inherit; cursor: pointer; color: inherit; text-decoration: none; }
+button:disabled { cursor: default; opacity: 0.45; }
+:focus-visible { outline: 3px solid rgba(217, 88, 59, 0.45); outline-offset: 2px; }
+
+.device {
+  width: min(1500px, calc(100% - 32px)); margin: 16px auto; padding: 18px 22px 16px;
+  border-radius: 34px; background: linear-gradient(var(--body-hi), var(--body) 30%, var(--body-lo));
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.8), inset 0 -4px 0 rgba(0, 0, 0, 0.08), 0 0 0 1px var(--edge), var(--shadow);
+  position: relative;
 }
-.status.on { background: rgba(52, 168, 83, 0.1); color: #1e7a38; }
-.status.off { background: var(--accent-soft); color: #b8402e; }
-.gear { width: 16px; height: 16px; flex: none; }
-.status.checking .gear { animation: spin 3s steps(12) infinite; }
-.status.on .gear { animation: spin 2.4s linear infinite; }
-.status.off .gear { transform: rotate(-12deg); }
-.status.flip { animation: pop 0.45s var(--ease); }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes pop { 0% { transform: scale(0.92); opacity: 0.4; } 100% { transform: none; opacity: 1; } }
-h1 { font: 700 clamp(26px, 3vw, 36px)/1.1 -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -0.035em; margin: 0; }
-h1 span { color: var(--ink-3); }
-h1 svg { width: 0.8em; height: 0.8em; color: var(--accent); margin-right: 12px; vertical-align: -0.04em; }
-header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px 24px; margin-bottom: 20px; }
-header h1 { justify-self: start; white-space: nowrap; }
-header .status { justify-self: end; }
-.private {
-  margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; color: var(--ink-2);
-  padding: 8px 16px 8px 13px; border-radius: 980px; background: var(--surface); box-shadow: var(--shadow);
-  animation: rise 0.7s var(--ease) 0.15s both;
+.device::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0.35; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.18'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-.private b { color: var(--ink); font-weight: 600; }
-.private svg { width: 16px; height: 16px; color: var(--good); flex: none; overflow: visible; }
-.private .shackle { animation: lock 0.6s var(--ease) 0.7s both; }
-@keyframes lock { from { transform: translateY(-3px); } 60% { transform: translateY(0.6px); } to { transform: none; } }
-@media (max-width: 1360px) {
+
+header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin-bottom: 14px; }
+.plate { justify-self: start; display: flex; align-items: baseline; gap: 14px; }
+h1 { margin: 0; font: 800 26px/1 "DM Sans", system-ui, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9); }
+.model { margin: 0; font: 400 12px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+.private { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-2); padding: 7px 14px; border-radius: 10px; background: rgba(255, 255, 255, 0.45); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12); }
+.private b { color: var(--ink); font-weight: 700; }
+.private svg { width: 15px; height: 15px; color: var(--good); }
+.status { justify-self: end; display: inline-flex; align-items: center; gap: 9px; font: 700 12px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); }
+.status .gear { display: none; }
+.led { width: 12px; height: 12px; border-radius: 50%; background: #8f877a; box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.35), 0 0 0 2px var(--body-lo); }
+.status.on .led { background: radial-gradient(circle at 40% 35%, #c9ffd9, #36c167 60%); box-shadow: 0 0 10px 2px rgba(54, 193, 103, 0.6), 0 0 0 2px var(--body-lo); }
+.status.off .led { background: radial-gradient(circle at 40% 35%, #ffc4b6, #e2492c 60%); box-shadow: 0 0 10px 2px rgba(226, 73, 44, 0.55), 0 0 0 2px var(--body-lo); }
+.status.checking .led { animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0.3; } }
+
+#install {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; padding: 12px 16px; margin-bottom: 14px; border-radius: 16px;
+  background: #fff6d9; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+#install .note { color: var(--ink-2); font-size: 14px; }
+#install pre { flex: 1; min-width: 260px; margin: 0; padding: 9px 12px; border-radius: 10px; background: var(--crt); color: var(--phos); font: 14px var(--mono); white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+
+.cols { display: grid; grid-template-columns: 290px minmax(0, 1fr) 360px; gap: 22px; align-items: stretch; }
+.bank { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.engrave { margin: 4px 2px 0; font: 700 12px var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-2); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8); display: flex; align-items: baseline; gap: 8px; }
+.engrave small { font: 600 12px "DM Sans", system-ui; letter-spacing: 0; text-transform: none; color: var(--ink-3); }
+.engrave-row { display: flex; align-items: center; gap: 10px; }
+.engrave-row .engrave { margin: 0; margin-right: auto; }
+
+.key, .bank button:not(.link):not(.help), #take button, #finish button, .seg, #install button {
+  border: 0; border-radius: 12px; padding: 9px 16px; font-weight: 700; font-size: 15px;
+  background: linear-gradient(#fdfaf3, #ece5d6); color: var(--ink);
+  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(80, 65, 45, 0.28), 0 4px 0 #c5baa5, 0 6px 10px -4px rgba(60, 40, 20, 0.35);
+  transition: transform 0.08s, box-shadow 0.08s, background 0.2s;
+}
+.key:hover:not(:disabled), .bank button:not(.link):not(.help):hover:not(:disabled), #take button:hover:not(:disabled), #finish button:hover:not(:disabled), #install button:hover { background: linear-gradient(#fffdf8, #f1ebde); }
+.key:active:not(:disabled), .bank button:not(.link):not(.help):active:not(:disabled), #take button:active:not(:disabled), #finish button:active:not(:disabled), #install button:active { transform: translateY(3px); box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(80, 65, 45, 0.28), 0 1px 0 #c5baa5, 0 2px 4px -2px rgba(60, 40, 20, 0.35); }
+.primary, #install .primary { background: linear-gradient(#e8735a, #cf4b2f); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 0 1px #8f3a24, 0 4px 0 #9e3820, 0 6px 10px -4px rgba(60, 20, 10, 0.4); }
+.primary:hover:not(:disabled), #install .primary:hover { background: linear-gradient(#ed7d64, #d55337); }
+.wide { width: 100%; }
+.big { font-size: 18px; padding: 12px 26px; }
+
+.keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 10px; padding: 12px; border-radius: 18px; background: var(--body-lo); box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.18), 0 1px 0 rgba(255, 255, 255, 0.7); }
+.mkey { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px 8px; border-radius: 12px; font: 700 12px "DM Sans", system-ui; color: var(--ink);
+  background: linear-gradient(color-mix(in srgb, var(--c) 55%, #fff), var(--c));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(80, 65, 45, 0.3), 0 4px 0 color-mix(in srgb, var(--c) 60%, #6b5a45), 0 6px 10px -4px rgba(60, 40, 20, 0.35);
+  border: 0; transition: transform 0.08s, box-shadow 0.08s; }
+.mkey:active:not(:disabled), .mkey.cur { transform: translateY(3px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(80, 65, 45, 0.3), 0 1px 0 color-mix(in srgb, var(--c) 60%, #6b5a45); }
+.mkey.cur { outline: 2.5px solid var(--ink); outline-offset: 2px; }
+.mkey .lamp { position: absolute; top: 6px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: rgba(60, 50, 40, 0.25); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.3); }
+.mkey.lit .lamp { background: #3ee07a; box-shadow: 0 0 6px 1px rgba(62, 224, 122, 0.8); }
+.mkey.off { filter: saturate(0.35); opacity: 0.75; }
+.mkey .face svg { width: 34px; height: 34px; }
+
+.list { display: flex; flex-direction: column; gap: 8px; }
+.list:empty { display: none; }
+.voice { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; cursor: pointer; background: rgba(255, 255, 255, 0.45); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); }
+.voice.sel { background: #fffaf0; box-shadow: 0 0 0 2px var(--ink), 0 3px 0 rgba(0, 0, 0, 0.15); }
+.voice .tick { width: 12px; height: 12px; border-radius: 50%; flex: none; background: rgba(60, 50, 40, 0.25); }
+.voice.sel .tick { background: #3ee07a; box-shadow: 0 0 6px 1px rgba(62, 224, 122, 0.8); }
+.voice .name { font-weight: 700; }
+.voice .muted { font-size: 13px; color: var(--ink-2); }
+.pack-actions { margin-left: auto; display: flex; gap: 2px; }
+.bank .voice .pack-actions button { background: none; box-shadow: none; padding: 4px 8px; font-size: 15px; color: var(--ink-2); border-radius: 6px; }
+.bank .voice .pack-actions button:hover { color: var(--accent-ink); background: none; }
+.alt { margin: 0; text-align: center; font-size: 14px; color: var(--ink-2); }
+.link { background: none; border: 0; padding: 0; font-size: 14px; font-weight: 700; color: var(--accent-ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.link:disabled { color: var(--ink-3); text-decoration: none; opacity: 1; }
+.banner { margin: 0; padding: 9px 12px; border-radius: 12px; font-size: 14px; background: #fff6d9; color: var(--ink); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); }
+
+.crt-wrap { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.crt { flex: 1; padding: 22px; border-radius: 30px; background: linear-gradient(#e2dac9, #cfc5b1); box-shadow: inset 0 2px 0 #fff8, inset 0 -3px 0 #0001, 0 0 0 1px var(--edge), 0 10px 22px -12px rgba(60, 40, 20, 0.5); display: flex; min-height: 0; }
+.screen {
+  flex: 1; position: relative; overflow: auto; scrollbar-width: none; border-radius: 26px / 30px; padding: 26px 30px;
+  color: var(--phos); font-family: var(--mono); background: radial-gradient(ellipse at 50% 40%, #1d4a40 0%, var(--crt) 70%, #08150f 100%);
+  box-shadow: inset 0 0 0 3px #0b1a16, inset 0 0 50px rgba(0, 0, 0, 0.75), inset 0 0 120px rgba(80, 255, 190, 0.08);
+  display: flex; flex-direction: column;
+}
+.screen::-webkit-scrollbar { display: none; }
+.screen::before { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; background: repeating-linear-gradient(rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px); z-index: 2; }
+.screen::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; background: radial-gradient(ellipse at 30% 15%, rgba(255, 255, 255, 0.09), transparent 45%); z-index: 2; }
+.screen > * { position: relative; z-index: 1; }
+.screen, .screen p, .screen li, .screen label { text-shadow: 0 0 6px rgba(120, 255, 200, 0.45); }
+.drop, .panel, #nowPlaying { flex: 1; display: flex; flex-direction: column; }
+.prompt { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; }
+.screen .seg { background: rgba(0, 0, 0, 0.35); box-shadow: inset 0 0 0 1px rgba(159, 245, 207, 0.35); padding: 3px; border-radius: 10px; }
+.screen .seg button { background: none; box-shadow: none; color: var(--phos-dim); font-family: var(--mono); font-size: 13px; padding: 5px 12px; border-radius: 7px; border: 0; }
+.screen .seg button.on { background: var(--phos); color: var(--crt); text-shadow: none; }
+.intro { margin: 0; max-width: 46ch; font-size: 14px; line-height: 1.5; color: var(--phos-dim); }
+.dots { display: flex; gap: 8px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--phos-dim); }
+.dots i.done { background: var(--phos); box-shadow: 0 0 8px rgba(159, 245, 207, 0.8); }
+.dots i.skip { background: rgba(159, 245, 207, 0.25); }
+.dots i.cur { box-shadow: inset 0 0 0 1.5px var(--phos), 0 0 0 3px rgba(159, 245, 207, 0.25); }
+.face svg { display: block; }
+.face .guide { display: none; }
+.face .head { fill: var(--c); stroke: #2c2721; stroke-width: 2.4; }
+.face .feat { fill: #2c2721; stroke: #2c2721; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.face .feat .fill { fill: #fff; }
+.face.big svg { width: 76px; height: 76px; filter: drop-shadow(0 0 10px rgba(159, 245, 207, 0.25)); }
+.face.sm svg { width: 22px; height: 22px; }
+.mood-label { margin: 0; font: 400 44px/1 var(--pixel); letter-spacing: 0.04em; text-transform: uppercase; color: var(--phos); }
+.hint { margin: 0; font-size: 15px; color: var(--phos-dim); }
+#readLine { margin: 6px 0 0; max-width: 26ch; font: 400 34px/1.15 var(--pixel); color: #e9fff4; }
+canvas { display: block; width: 100%; height: 48px; }
+
+.panel-title { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 12px; color: var(--phos-dim); font-size: 13px; }
+.panel-title strong { font: 400 32px/1 var(--pixel); color: var(--phos); text-transform: uppercase; }
+audio { width: 100%; }
+.screen audio { filter: invert(0.9) hue-rotate(110deg) saturate(0.6); border-radius: 30px; }
+.checks { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 15px; }
+.checks li::before { content: "▸ "; color: #ffcf7a; }
+.checks li.ok::before { content: "✓ "; color: var(--phos); }
+.checks li.hard { color: #ffb4a3; }
+label { display: block; font-size: 13px; color: var(--phos-dim); margin: 14px 0 6px; }
+#vhint { color: #ffcf7a; }
+.screen textarea, .screen input[type=text] { width: 100%; font: 400 15px var(--mono); color: var(--phos); background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(159, 245, 207, 0.35); border-radius: 10px; padding: 10px 12px; resize: none; field-sizing: content; min-height: 2lh; }
+.screen textarea:focus, .screen input:focus { outline: 0; border-color: var(--phos); }
+.row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.panel > .row:last-of-type { margin-top: auto; padding-top: 16px; }
+.fine { margin: 10px 0 0; font-size: 12px; color: var(--phos-dim); }
+.err { color: #c43d24; font-size: 14px; font-weight: 700; }
+.err:empty { display: none; }
+.screen .err { color: #ffb4a3; margin: 10px 0 0; }
+
+.screen-title { margin: 0 0 12px; font: 400 26px var(--pixel); letter-spacing: 0.08em; text-transform: uppercase; color: var(--phos-dim); }
+#idle { margin: auto; max-width: 30ch; text-align: center; font: 400 28px/1.2 var(--pixel); color: var(--phos-dim); }
+#lines:not(:empty) ~ #idle { display: none; }
+body.wizard #nowPlaying { display: none; }
+#lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+#lines:empty { display: none; }
+#lines li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 15px; }
+#lines li.playing { background: rgba(159, 245, 207, 0.14); }
+#lines .t { flex: 1; min-width: 0; color: #e9fff4; font: 400 24px/1.15 var(--pixel); }
+#lines .why { font-size: 12px; color: var(--phos-dim); max-width: 24ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: none; }
+#lines .st { font-size: 12px; width: 76px; text-align: right; flex: none; color: var(--phos-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+#lines li.running .st { color: #ffcf7a; animation: blink 1s steps(2) infinite; }
+#lines li.done .st { color: var(--phos); }
+#lines li.error .st { color: #ffb4a3; }
+#lines .mini { flex: none; border: 1px solid rgba(159, 245, 207, 0.45); background: rgba(0, 0, 0, 0.3); color: var(--phos); border-radius: 7px; padding: 3px 9px; font: 13px var(--mono); }
+#lines .mini:hover:not(:disabled) { background: rgba(159, 245, 207, 0.15); }
+.chip select { appearance: none; border: 0; border-radius: 7px; padding: 4px 9px; font: 700 12px "DM Sans", system-ui; background: var(--c); color: var(--ink); cursor: pointer; }
+.chip select.manual { box-shadow: 0 0 0 2px var(--phos); }
+
+.recbar { display: flex; align-items: center; gap: 18px; justify-content: center; }
+.key.red { display: inline-flex; align-items: center; gap: 10px; padding: 14px 34px; font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase; color: #fff;
+  background: linear-gradient(#ef6a4f, #cc3f25); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 0 1px #8f3a24, 0 5px 0 #8f321d, 0 8px 14px -6px rgba(60, 20, 10, 0.5); }
+.key.red:hover:not(:disabled) { background: linear-gradient(#f2765c, #d2472c); }
+.key.red .dot { width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3); }
+#rec.recording { background: linear-gradient(#3c3530, #24201c); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 0 1px #000, 0 1px 0 #000, 0 0 18px 2px rgba(239, 106, 79, 0.55); transform: translateY(4px); }
+#rec.recording .dot { background: #ff5a3c; animation: blink 0.8s steps(2) infinite; box-shadow: 0 0 8px 2px rgba(255, 90, 60, 0.8); }
+
+.seg { display: inline-flex; padding: 3px; gap: 2px; }
+.bank .seg { padding: 3px; }
+.bank .seg button { background: none; box-shadow: none; padding: 5px 10px; font-size: 13px; border-radius: 8px; }
+.bank .seg button.on { background: var(--ink); color: #fffaf0; }
+.help { width: 30px; height: 30px; padding: 0; border-radius: 50%; font-weight: 800; border: 0; background: var(--m-excited); box-shadow: 0 0 0 1px rgba(80, 65, 45, 0.3), 0 3px 0 #c2a24d; }
+.help:active { transform: translateY(2px); box-shadow: 0 0 0 1px rgba(80, 65, 45, 0.3), 0 1px 0 #c2a24d; }
+.sticky { position: relative; padding: 14px 16px 12px; background: #fbe69a; border-radius: 4px; transform: rotate(-1.2deg); box-shadow: 0 10px 16px -10px rgba(60, 40, 20, 0.5); font-size: 14px; }
+.sticky::before { content: ""; position: absolute; top: -9px; left: 50%; width: 70px; height: 18px; margin-left: -35px; background: rgba(255, 255, 255, 0.55); transform: rotate(2deg); }
+.sticky p { margin: 0 0 8px; }
+.sticky code { font: 700 12.5px var(--mono); background: rgba(255, 255, 255, 0.6); padding: 1px 5px; border-radius: 4px; }
+.sticky .ex { display: flex; flex-wrap: wrap; gap: 6px; }
+.bank .sticky .ex button { padding: 4px 10px; font-size: 13px; }
+.paper { flex: 1; min-height: 200px; display: flex; padding: 22px 18px 18px 46px; border-radius: 6px; position: relative;
+  background: linear-gradient(90deg, transparent 32px, rgba(217, 88, 59, 0.45) 32px 33.5px, transparent 33.5px), #fffdf6;
+  box-shadow: 0 0 0 1px rgba(80, 65, 45, 0.18), 0 14px 22px -14px rgba(60, 40, 20, 0.55); }
+#script { flex: 1; width: 100%; border: 0; outline: 0; resize: none; padding: 0; color: var(--ink); font: 500 19px/1.6em "DM Sans", system-ui, sans-serif;
+  background: repeating-linear-gradient(transparent 0 calc(1.6em - 1px), rgba(110, 150, 190, 0.35) calc(1.6em - 1px) 1.6em); background-attachment: local; }
+#script::placeholder { color: var(--ink-3); }
+#job { padding: 12px 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.5); }
+#job .top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 8px; font-size: 14px; }
+.bar { height: 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.12); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.6s var(--ease); }
+
+.deck { display: grid; grid-template-columns: 1fr auto 140px; align-items: center; gap: 22px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(80, 65, 45, 0.18); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7); }
+.lcd { min-height: 46px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 8px 16px; border-radius: 10px; background: linear-gradient(#a9b98a, #93a574); color: #1f2a14; font: 400 24px/1 var(--pixel); letter-spacing: 0.03em; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.7); }
+.lcd .err { font: 400 20px var(--pixel); color: #7a1d0c; }
+.transport { display: flex; gap: 12px; align-items: center; }
+.key.go { font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 34px; color: #1f3d22;
+  background: linear-gradient(#c8e8b4, #9fd18a); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px #4f7a40, 0 5px 0 #5f8f4d, 0 8px 14px -6px rgba(30, 60, 20, 0.45); }
+.key.go:hover:not(:disabled) { background: linear-gradient(#d2eebf, #a8d894); }
+.key.go:active:not(:disabled) { transform: translateY(4px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px #4f7a40, 0 1px 0 #5f8f4d; }
+.grille { justify-self: end; width: 120px; height: 46px; border-radius: 12px; background: radial-gradient(circle, #6e6556 1.6px, transparent 2.2px) 0 0 / 9px 9px; opacity: 0.7; }
+body.playing .grille { animation: thump 0.35s ease-in-out infinite alternate; }
+@keyframes thump { to { transform: scale(1.03); opacity: 0.95; } }
+
+.burst { position: fixed; z-index: 90; pointer-events: none; transform: translate(-50%, -50%); padding: 6px 14px; border-radius: 8px; background: var(--crt); color: var(--phos); font: 400 26px var(--pixel); letter-spacing: 0.06em; box-shadow: 0 0 0 2px var(--phos-dim), 0 0 20px rgba(159, 245, 207, 0.4); animation: toast 1s var(--ease) forwards; }
+.burst svg { display: none; }
+@keyframes toast { 0% { opacity: 0; transform: translate(-50%, -30%); } 20%, 75% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -80%); } }
+
+#mobile { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 32px 24px; text-align: center; color: #fff; }
+#mobile > svg { width: 56px; height: 56px; }
+#mobile p { margin: 0; max-width: 30ch; }
+body.phone main { display: none; }
+
+@media (min-width: 1100px) {
+  .device { height: calc(100vh - 32px); height: calc(100dvh - 32px); display: flex; flex-direction: column; }
+  .cols { flex: 1; min-height: 0; }
+  .bank { overflow: auto; scrollbar-width: none; }
+}
+@media (max-width: 1099px) {
+  .cols { grid-template-columns: 1fr; }
+  .crt { min-height: 460px; }
   header { grid-template-columns: 1fr auto; }
   .private { grid-column: 1 / -1; grid-row: 2; justify-self: start; }
+  .deck { grid-template-columns: 1fr; }
+  .grille { display: none; }
 }
-#install { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; padding: 12px 16px; margin-bottom: 18px; border-radius: 18px; }
-#install { background: var(--accent); color: #fff; box-shadow: 0 10px 30px -12px var(--accent); }
-#install .muted { color: rgba(255, 255, 255, 0.82); }
-#install .seg { background: rgba(255, 255, 255, 0.2); }
-#install .seg button { color: #fff; }
-#install .seg button.on { background: #fff; color: var(--accent); box-shadow: none; }
-#install pre { background: rgba(0, 0, 0, 0.14); color: #fff; }
-#install button:not(.primary):not(.seg button) { background: rgba(255, 255, 255, 0.2); color: #fff; }
-#install button:not(.primary):hover { background: rgba(255, 255, 255, 0.3); }
-#install .primary { background: #fff; color: var(--accent); }
-#install .primary:hover { background: #fff; filter: none; opacity: 0.92; }
-@media (max-width: 1200px) { #install .note { display: none; } }
-#install pre { flex: 1; min-width: 260px; margin: 0; padding: 9px 12px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
-.card { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); padding: 22px; }
-h2 { font-size: 13px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.02em; margin: 0 0 10px 4px; height: 18px; }
-h2 small { text-transform: none; font-weight: 400; color: var(--ink-3); letter-spacing: 0; font-size: 13px; }
-.muted { color: var(--ink-2); font-size: 15px; }
-button, .btn {
-  font: inherit; font-size: 15px; font-weight: 500; border: 0; border-radius: 980px; padding: 9px 18px; cursor: pointer;
-  background: var(--fill); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  text-decoration: none; transition: background 0.2s, transform 0.15s var(--ease), opacity 0.2s, box-shadow 0.2s;
+@media (min-width: 1100px) and (max-height: 820px) {
+  .device { padding: 14px 18px 12px; }
+  header { margin-bottom: 10px; }
+  .crt { padding: 16px; }
+  .screen { padding: 18px 22px; }
+  .face.big svg { width: 58px; height: 58px; }
+  .mood-label { font-size: 36px; }
+  #readLine { font-size: 28px; }
+  .deck { margin-top: 10px; padding-top: 10px; }
 }
-button:hover:not(:disabled), .btn:hover { background: var(--fill-2); }
-button:active:not(:disabled), .btn:active { transform: scale(0.97); }
-.primary { background: var(--accent); color: #fff; }
-.primary:hover:not(:disabled) { background: var(--accent); filter: brightness(1.06); }
-.big { font-size: 17px; padding: 12px 28px; }
-#go:not(:disabled) { box-shadow: 0 6px 18px -6px var(--accent); }
-button:disabled { opacity: 0.35; cursor: default; }
-:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
-textarea, input[type=text] {
-  width: 100%; font: inherit; color: var(--ink); background: var(--fill); border: 0; border-radius: 14px;
-  padding: 11px 14px; resize: none; transition: box-shadow 0.2s;
+.keys { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 8px; padding: 10px; }
+.mkey { min-width: 0; font-size: 12px; padding: 9px 2px 7px; }
+.mkey .face svg { width: 30px; height: 30px; }
+.mkey:disabled { opacity: 1; cursor: default; }
+.plate { gap: 4px 14px; flex-wrap: wrap; }
+h1 { white-space: nowrap; font-size: 24px; }
+.model { white-space: nowrap; }
+.voice .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.voice .muted { white-space: nowrap; }
+.bank .seg { background: var(--body-lo); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.7); border-radius: 11px; }
+.bank .seg button:not(.link):not(.help) { background: none; box-shadow: none; padding: 5px 11px; font-size: 13px; border-radius: 8px; transform: none; }
+.bank .seg button:not(.link):not(.help).on { background: var(--ink); color: #fffaf0; }
+.screen button { font-family: "DM Sans", system-ui, sans-serif; text-shadow: none; }
+#take .primary, #finish .primary { background: linear-gradient(#e8735a, #cf4b2f); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 0 1px #8f3a24, 0 4px 0 #9e3820, 0 6px 10px -4px rgba(0, 0, 0, 0.5); }
+#take .primary:hover:not(:disabled), #finish .primary:hover:not(:disabled) { background: linear-gradient(#ed7d64, #d55337); }
+.bank .voice.sel, .voice.sel { background: #fffaf0; box-shadow: 0 0 0 1.5px rgba(44, 39, 33, 0.35), 0 2px 6px -2px rgba(60, 40, 20, 0.3); }
+.packlist { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 4px; }
+.packlist li { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; background: rgba(0, 0, 0, 0.18); }
+.packlist .pl-name { font: 400 24px/1 var(--pixel); color: #e9fff4; text-transform: uppercase; min-width: 6ch; }
+.packlist .pl-info { flex: 1; font-size: 13px; color: var(--phos-dim); }
+#finish .packlist .mini { flex: none; border: 1px solid rgba(159, 245, 207, 0.45); background: rgba(0, 0, 0, 0.3); color: var(--phos); border-radius: 7px; padding: 3px 10px; font: 13px var(--mono); box-shadow: none; }
+#finish .packlist .mini:hover:not(:disabled) { background: rgba(159, 245, 207, 0.15); }
+.crt-wrap, .bank.right { min-height: 0; }
+.bank.right .paper { min-height: 120px; }
+@media (min-width: 1100px) and (max-height: 820px) {
+  #finish .hint { font-size: 13px; }
+  .packlist { margin-top: 8px; gap: 2px; }
+  .packlist li { padding: 2px 8px; }
+  .packlist .pl-name { font-size: 20px; }
+  #finish .packlist .mini { padding: 1px 9px; }
+  #finish label { margin-top: 8px; }
+  #finish .row { margin-top: 8px; }
+  #finish .panel > .row:last-of-type, #finish > .row:last-of-type { padding-top: 8px; }
+  #finish .fine { margin-top: 6px; }
+  #finish .mood-label { font-size: 30px; }
 }
-textarea:focus, input[type=text]:focus { outline: 0; box-shadow: 0 0 0 3px var(--accent-soft); }
-textarea::placeholder { color: var(--ink-3); }
-#script { min-height: 220px; font-size: 19px; line-height: 1.5; background: transparent; padding: 4px; border-radius: 0; }
-#script:focus { box-shadow: none; }
-.seg { display: inline-flex; background: var(--fill); border-radius: 10px; padding: 2px; }
-.seg button { border-radius: 8px; padding: 6px 14px; font-size: 13px; background: transparent; }
-.seg button:hover:not(:disabled) { background: transparent; }
-.seg button.on { background: var(--surface); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
-.list { border-radius: 14px; overflow: hidden; background: var(--fill); margin-bottom: 12px; }
-.list:empty { display: none; }
-.voice { display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer; }
-.voice + .voice { box-shadow: inset 0 1px 0 var(--sep); }
-.voice .tick { width: 22px; height: 22px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--ink-3); flex: none; display: grid; place-items: center; }
-.voice.sel .tick { background: var(--accent); box-shadow: none; }
-.voice.sel .tick::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
-.voice .name { font-weight: 500; }
-.voice .x { margin-left: auto; padding: 4px 10px; font-size: 13px; background: transparent; color: var(--ink-3); }
-.voice .x:hover { color: var(--accent); background: transparent; }
-#addVoice { width: 100%; }
-.drop { display: flex; flex-direction: column; gap: 14px; }
-.prompt { background: var(--fill); border-radius: 18px; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
-.prompt .seg { background: var(--fill-2); }
-.eyebrow { font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
-#readLine { font-size: 20px; font-weight: 500; line-height: 1.45; letter-spacing: -0.015em; margin: 0; max-width: 30ch; transition: opacity 0.25s var(--ease); }
-.wide { width: 100%; }
-.wide svg { width: 18px; height: 18px; }
-#rec.recording { background: var(--ink); }
-.alt { margin: 0; text-align: center; font-size: 14px; color: var(--ink-3); }
-.link { background: none; padding: 0; font-size: 14px; color: var(--accent); font-weight: 500; }
-.link:hover:not(:disabled) { background: none; text-decoration: underline; }
-canvas { display: block; width: 100%; height: 40px; }
-#voiceSection .card { transition: box-shadow 0.25s var(--ease); }
-body.over #voiceSection .card { box-shadow: 0 0 0 2px var(--accent), var(--shadow); }
-.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
-.foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--sep); }
-label { display: block; font-size: 13px; color: var(--ink-2); margin: 14px 4px 6px; }
-#vhint { color: var(--accent); }
-audio { width: 100%; }
-#vprev { margin-bottom: 4px; }
-.err { color: var(--accent); font-size: 15px; margin: 10px 4px 0; }
-.err:empty { display: none; }
-pre { font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace; background: var(--fill); border-radius: 12px; padding: 12px 14px; margin: 14px 0 0; white-space: pre-wrap; word-break: break-all; }
-#job { margin-top: 16px; padding: 16px; border-radius: 16px; background: var(--fill); }
-#job .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-#job strong { font-weight: 600; }
-.bar { height: 6px; border-radius: 3px; background: var(--fill-2); overflow: hidden; }
-.bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width 0.6s var(--ease); }
-#result .row { margin-top: 10px; }
-.hidden { display: none !important; }
-#mobile { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 32px 24px; text-align: center; }
-#mobile > svg { width: 56px; height: 56px; color: var(--accent); }
-#mobile h1 { font-size: 34px; }
-#mobile p { margin: 0; max-width: 30ch; color: var(--ink-2); }
-body.phone main { display: none; }
-.section { margin-bottom: 20px; }
-
-@media (min-width: 980px) {
-  main { height: 100vh; height: 100dvh; padding: clamp(20px, 2vw, 36px); display: flex; flex-direction: column; }
-  .cols { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(360px, 30%) 1fr; gap: 24px; }
-  .section { display: flex; flex-direction: column; min-height: 0; margin: 0; }
-  .section > .card { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: auto; scrollbar-width: none; }
-  .section > .card::-webkit-scrollbar { display: none; }
-  #voiceSection .drop { flex: 1; min-height: 0; }
-  #voiceSection .prompt { flex: 1; }
-  #script { flex: 1; min-height: 80px; }
-}
-@media (min-width: 980px) and (max-height: 820px) {
-  .card { padding: 18px; }
-  .prompt { padding: 16px; gap: 10px; }
-  #readLine { font-size: 17px; }
-  label { margin-top: 10px; }
-}
-
-@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
-@keyframes fade { from { opacity: 0; } }
-@keyframes pulse { 50% { opacity: 0.3; } }
-#voiceSection { animation-delay: 0.06s; }
-#scriptSection { animation-delay: 0.12s; }
-#drop, #newVoice, .voice, #job, #result, #addVoice { animation: fade 0.35s var(--ease) both; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
 <div id="mobile" class="hidden">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-  <h1>Your script. <span>Your voice.</span></h1>
+  <h1>Voice Studio</h1>
   <p>Voice Studio runs on your own computer, so it works on a Mac, Windows or Linux PC, not on phones.</p>
   <p class="muted">Open this page on your computer:</p>
   <button id="share" class="primary big">Copy link</button>
 </div>
-<main>
+<div id="bursts" aria-hidden="true"></div>
+<main class="device">
   <header>
-    <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>Your script. <span>Your voice.</span></h1>
-    <p class="private"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path class="shackle" d="M8 11V8a4 4 0 0 1 8 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg><b>Generated on your own computer.</b> Nothing is uploaded.</p>
-    <span id="status" class="status checking"><svg class="gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span id="statusText">Checking</span></span>
+    <div class="plate">
+      <h1>Voice Studio</h1>
+      <p class="model">Your script · your voice · VS-2</p>
+    </div>
+    <p class="private"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11V8a4 4 0 0 1 8 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg><b>Runs on your computer.</b> Nothing is uploaded.</p>
+    <span id="status" class="status checking"><i class="led"></i><span id="statusText">Checking</span><svg class="gear" viewBox="0 0 24 24" aria-hidden="true"></svg></span>
   </header>
 
-  <div id="install" class="card hidden">
-    <strong>Install once</strong><span class="muted note">about 4.5 GB, paste into Terminal</span>
+  <div id="install" class="hidden">
+    <strong>Install the engine once</strong><span class="note">about 4.5 GB, paste into Terminal</span>
     <div class="seg"><button data-os="mac" class="on">Mac / Linux</button><button data-os="win">Windows</button></div>
     <pre id="cmd"></pre>
     <button id="copy">Copy</button><button id="retry" class="primary">I've installed it</button>
   </div>
 
   <div class="cols">
-  <div class="section" id="voiceSection">
-    <h2>Voice <small>(saved in this browser only)</small></h2>
-    <div class="card">
+    <aside class="bank" id="voiceSection">
+      <p class="engrave">Moods</p>
+      <div class="keys" id="moodKeys"></div>
+      <p class="engrave">Voice packs <small>saved in this browser</small></p>
+      <p id="dbBanner" class="banner hidden"></p>
       <div id="voices" class="list"></div>
-      <button id="addVoice" class="hidden">+ Add another voice</button>
-      <div id="drop" class="drop">
-        <div class="prompt">
-          <span class="eyebrow">Read this aloud</span>
-          <div class="seg" id="lineStyle">
-            <button data-line="energy" class="on">Lively</button><button data-line="calm">Calm</button><button data-line="hinglish">Hinglish</button>
-          </div>
-          <p id="readLine"></p>
-          <canvas id="wave" class="hidden" width="600" height="48"></canvas>
-        </div>
-        <button id="rec" class="primary big wide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span id="recLabel">Record</span></button>
-        <p class="alt">or <button id="pick" class="link">choose a file</button> · or drop one anywhere</p>
-        <input id="file" type="file" accept="audio/*" class="hidden">
-      </div>
-      <div id="newVoice" class="hidden">
-        <audio id="vprev" controls></audio>
-        <label for="vname">Name</label>
-        <input id="vname" type="text" value="Me">
-        <label for="vtext">What you said <span id="vhint"></span></label>
-        <textarea id="vtext" rows="3"></textarea>
-        <p id="vwarn" class="err"></p>
-        <div class="row"><button id="save" class="primary">Save voice</button><button id="cancel">Cancel</button></div>
-      </div>
-    </div>
-  </div>
+      <div id="addRow" class="hidden"><button id="addVoice" class="key wide">+ New voice pack</button></div>
+      <p class="alt"><button id="importBtn" class="link">Load a pack file</button></p>
+    </aside>
 
-  <div class="section" id="scriptSection">
-    <h2>Script</h2>
-    <div class="card">
-      <textarea id="script" placeholder="Type what you want to hear. Write numbers as words."></textarea>
+    <section class="crt-wrap" aria-label="Screen">
+      <div class="crt">
+        <div class="screen">
+          <div id="drop" class="drop">
+            <div class="prompt">
+              <div class="seg" id="lineLang"><button data-lang="en" class="on">English</button><button data-lang="hi">हिन्दी</button></div>
+              <p class="intro" id="intro">Act it out. The clone copies how you say each line, not just your voice. If every line sounds the same, your clone will sound flat too.</p>
+              <div class="dots" id="dots"></div>
+              <div class="face big" id="moodFace"></div>
+              <p class="mood-label" id="moodLabel"></p>
+              <p class="hint" id="moodHint"></p>
+              <p id="readLine" dir="auto"></p>
+              <canvas id="wave" class="hidden" width="600" height="48"></canvas>
+            </div>
+          </div>
+          <div id="take" class="panel hidden">
+            <p class="panel-title"><strong id="takeTitle"></strong><span>Listen back</span></p>
+            <audio id="vprev" controls></audio>
+            <ul id="checks" class="checks"></ul>
+            <label for="vtext">What you said <span id="vhint"></span></label>
+            <textarea id="vtext" rows="2" dir="auto"></textarea>
+            <div class="row"><button id="keep" class="primary">Use this take</button><button id="redoTake">Record again</button></div>
+          </div>
+          <div id="finish" class="panel hidden">
+            <p class="mood-label" id="finishTitle">Your voice pack</p>
+            <p class="hint">Play each take. Re-record any that sound flat. Normal against excited should sound clearly different.</p>
+            <ul id="packList" class="packlist"></ul>
+            <div class="row"><button id="compare">▶ Normal, then excited</button></div>
+            <label for="vname">Name this voice</label>
+            <input id="vname" type="text" value="Me">
+            <p class="fine">Only clone your own voice, or a voice you have permission to use.</p>
+            <div class="row"><button id="save" class="primary">Save voice pack</button><button id="back">Back</button></div>
+          </div>
+          <div id="nowPlaying">
+            <p class="screen-title">Now playing</p>
+            <ul id="lines"></ul>
+            <p id="idle">Type a script on the note. Each line shows up here with the mood it will use.</p>
+          </div>
+          <p id="vwarn" class="err"></p>
+        </div>
+      </div>
+      <div id="recBar" class="recbar">
+        <button id="rec" class="key red"><span class="dot"></span><span id="recLabel">Record</span></button>
+        <p class="alt">or <button id="pick" class="link">choose a file</button> · <button id="skip" class="link">skip this mood</button> · <button id="quit" class="link">cancel</button></p>
+        <input id="file" type="file" accept="audio/*" class="hidden">
+        <input id="packFile" type="file" accept=".json,application/json" class="hidden">
+      </div>
+    </section>
+
+    <aside class="bank right" id="scriptSection">
+      <div class="engrave-row">
+        <p class="engrave">Script</p>
+        <div class="seg" id="scriptLang"><button data-lang="" class="on">Auto</button><button data-lang="English">EN</button><button data-lang="Hindi">HI</button></div>
+        <button id="helpBtn" class="help" aria-expanded="false" aria-controls="helpPanel" title="How moods work">?</button>
+      </div>
+      <div id="helpPanel" class="sticky hidden">
+        <p>Write it like a story: <code>"I'm fine," I said sarcastically.</code> says only “I'm fine”, deadpan.</p>
+        <p>End with <code>!</code> for excited, <code>?</code> for curious, or start with <code>(calm)</code>.</p>
+        <div class="ex">
+          <button data-ex='"I&#39;m fine," I said sarcastically.'>Sarcastic</button>
+          <button data-ex="We actually did it!">Excited</button>
+          <button data-ex="Wait, did you hear that?">Curious</button>
+          <button data-ex="(calm) Take a breath. It's going to be okay.">Calm</button>
+        </div>
+      </div>
+      <div class="paper">
+        <textarea id="script" dir="auto" placeholder="Type what you want to hear. Write numbers as words."></textarea>
+      </div>
+      <audio id="player"></audio>
       <div id="job" class="hidden">
-        <div class="top"><strong id="jobTitle">Generating</strong><span id="ptext" class="muted"></span></div>
+        <div class="top"><strong id="jobTitle">Generating</strong><span id="ptext"></span></div>
         <div id="progress" class="bar"><i id="fill"></i></div>
         <div id="result" class="hidden">
           <audio id="out" controls></audio>
           <div class="row"><a id="dl" class="btn primary" download="voice.wav">Download</a><button id="close">Clear</button></div>
         </div>
       </div>
-      <p id="err" class="err"></p>
-      <div class="foot">
-        <span id="estimate" class="muted"></span>
-        <button id="go" class="primary big">Generate</button>
-      </div>
+    </aside>
+  </div>
+
+  <footer class="deck">
+    <div class="lcd"><span id="estimate"></span><span id="err" class="err"></span></div>
+    <div class="transport">
+      <button id="playAll" class="key hidden" title="Play all">▶ Play</button>
+      <button id="cancelJob" class="key hidden" title="Stop generating">■ Stop</button>
+      <a id="dlAll" class="key btn hidden" download="voice.wav">⤓ Download</a>
+      <button id="go" class="key go">Generate</button>
     </div>
-  </div>
-  </div>
+    <div class="grille" aria-hidden="true"></div>
+  </footer>
 </main>
 
+<script id="rules">
+const MOOD_NAMES = ["normal", "excited", "calm", "deadpan", "serious", "curious"];
+const FALLBACK = { normal: [], excited: ["normal"], calm: ["normal"], deadpan: ["calm", "normal"], serious: ["deadpan", "normal"], curious: ["calm", "normal"] };
+const GATES = { caps: false, tags: false, speed: false };
+const SPEED = { calm: 0.92, deadpan: 0.95, excited: 1.05 };
+const CUES = {
+  excited: ["excited", "excitedly", "shouted", "yelled", "screamed", "cheered", "thrilled", "happily", "surprised", "shocked", "khushi se", "zor se", "उत्साह से", "ख़ुशी से", "खुशी से", "ज़ोर से", "चिल्लाकर"],
+  calm: ["calm", "calmly", "softly", "gently", "quietly", "slowly", "tenderly", "dheere se", "pyaar se", "धीरे से", "शांति से", "प्यार से"],
+  deadpan: ["deadpan", "sarcastic", "sarcastically", "dryly", "flatly", "bored", "unimpressed", "rolled my eyes", "taane se", "ताने से", "व्यंग्य से"],
+  serious: ["serious", "seriously", "firmly", "sternly", "warned", "coldly", "angrily", "gusse se", "sakhti se", "गुस्से से", "ग़ुस्से से", "सख़्ती से"],
+  curious: ["curious", "curiously", "wondered", "whispered", "asked", "suspiciously", "nervously", "chupke se", "चुपके से", "फुसफुसाकर"],
+};
+const TAGS = /^\[(laughter|sigh|confirmation-en|question-(en|ah|oh|ei|yi)|surprise-(ah|oh|wa|yo)|dissatisfaction-hnn)\]$/;
+const ENDS = ".!?…।。！？؟";
+const OPEN = "“«「", CLOSE = "”»」";
+const ABBR = /(?:^|\s)(?:Mr|Mrs|Ms|Dr|St|vs|etc|e\.g|i\.e)\.$/i;
+const INITIAL = /(?:^|\s)\p{Lu}\.$/u;
+
+function hardWrap(s, max = 600) {
+  const out = [];
+  while (s.length > max) {
+    let cut = Math.max(s.lastIndexOf(",", max), s.lastIndexOf(";", max), s.lastIndexOf("、", max));
+    if (cut < max / 3) cut = s.lastIndexOf(" ", max);
+    if (cut < max / 3) cut = max - 1;
+    out.push(s.slice(0, cut + 1).trim());
+    s = s.slice(cut + 1).trim();
+  }
+  if (s) out.push(s);
+  return out;
+}
+
+function splitSentences(text) {
+  const result = [];
+  const paras = text.replace(/\r/g, "").split(/\n\s*\n/).map((p) => p.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean);
+  paras.forEach((para, pi) => {
+    const found = [];
+    let buf = "", depth = 0, straight = false;
+    const flush = () => { if (buf.trim()) found.push(buf.trim()); buf = ""; };
+    for (let i = 0; i < para.length; i++) {
+      const c = para[i], next = para[i + 1];
+      buf += c;
+      if (OPEN.includes(c)) depth++;
+      else if (CLOSE.includes(c)) depth = Math.max(0, depth - 1);
+      else if (c === '"') straight = !straight;
+      const quoted = depth > 0 || straight;
+      const closer = CLOSE.includes(c) || c === '"';
+      const endsHere = ENDS.includes(c) || (closer && !quoted && ENDS.includes(para[i - 1]));
+      if (!endsHere || quoted) continue;
+      if (next && (ENDS.includes(next) || CLOSE.includes(next) || next === '"')) continue;
+      const cjk = "。！？".includes(c);
+      if (next !== undefined && !cjk && !/\s/.test(next)) continue;
+      if (c === "." && (ABBR.test(buf) || INITIAL.test(buf))) continue;
+      if (closer && /^\s*\p{Ll}/u.test(para.slice(i + 1))) continue;
+      flush();
+    }
+    flush();
+    found.flatMap((s) => hardWrap(s)).forEach((s, i, all) => result.push({ raw: s, paraEnd: i === all.length - 1 && pi < paras.length - 1 }));
+  });
+  return result;
+}
+
+function pauseFor(s, paraEnd) {
+  if (paraEnd) return 0.9;
+  const t = s.replace(/[\s"”»」)\]]+$/, "");
+  if (/(…|\.\.\.)$/.test(t)) return 0.7;
+  if (/[!?！？؟]$/.test(t)) return 0.4;
+  if (/[,，、]$/.test(t)) return 0.2;
+  return 0.35;
+}
+
+function cueMood(text) {
+  const lower = text.toLowerCase();
+  for (const mood of MOOD_NAMES.slice(1)) {
+    for (const cue of CUES[mood]) {
+      const at = lower.indexOf(cue);
+      if (at < 0) continue;
+      const before = lower[at - 1], after = lower[at + cue.length];
+      const edge = (ch) => ch === undefined || !/[\p{L}\p{M}]/u.test(ch);
+      if (edge(before) && edge(after)) return { mood, cue };
+    }
+  }
+  return null;
+}
+
+function capsWords(script) {
+  const words = script.match(/\p{L}+/gu) || [];
+  const seen = new Map();
+  for (const w of words) { const k = w.toLowerCase(); seen.set(k, (seen.has(k) ? seen.get(k) : true) && w === w.toUpperCase()); }
+  return new Set([...seen].filter(([w, alwaysCaps]) => alwaysCaps && w.length <= 5).map(([w]) => w));
+}
+
+function pickMood(raw, available, acronyms = new Set()) {
+  let speak = raw, mood = null, why = "";
+  const bracket = speak.match(/^\s*[(\[]([^)\]]{1,40})[)\]]\s*/);
+  if (bracket && !TAGS.test(`[${bracket[1]}]`)) {
+    const word = bracket[1].trim().toLowerCase();
+    const hit = MOOD_NAMES.includes(word) ? { mood: word, cue: word } : cueMood(word);
+    speak = speak.slice(bracket[0].length);
+    if (hit) { mood = hit.mood; why = `from “(${bracket[1].trim()})”`; }
+  }
+  if (!mood) {
+    const quotes = [...speak.matchAll(/[“"«「]([^”"»」]+)[”"»」]/g)];
+    const outside = speak.replace(/[“"«「][^”"»」]*[”"»」]/g, " ");
+    if (quotes.length && /[\p{L}]/u.test(outside)) {
+      const hit = cueMood(outside);
+      speak = quotes.map((q) => q[1].trim()).join(" ").replace(/[,，、;:\s]+$/, "");
+      if (!/[.!?…।。！？؟]$/.test(speak)) speak += ".";
+      mood = hit ? hit.mood : "normal";
+      why = hit ? `from “${hit.cue}”` : "direction removed";
+    }
+  }
+  if (!GATES.tags) speak = speak.replace(/\[[^\[\]]*\]/g, (t) => (TAGS.test(t) ? "" : t)).replace(/\s{2,}/g, " ").trim();
+  const end = speak.replace(/[\s"”»」)\]]+$/, "");
+  if (!mood && /(\?!|!\?|!)$/.test(end)) { mood = "excited"; why = "from “!”"; }
+  else if (!mood && /[?？؟]$/.test(end)) { mood = "curious"; why = "from “?”"; }
+  if (!mood && GATES.caps) {
+    const caps = (speak.match(/\p{Lu}{3,}/gu) || []).filter((w) => !acronyms.has(w.toLowerCase()));
+    if (caps.length >= 2) { mood = "excited"; why = "from CAPS"; }
+  }
+  const wanted = mood || "normal";
+  let used = wanted;
+  if (!available.includes(used)) {
+    used = FALLBACK[wanted].find((m) => available.includes(m)) || available[0];
+    why = `${why ? why + ", " : ""}using ${used}, no ${wanted} sample`;
+  }
+  return { speak: speak.trim(), wanted, mood: used, why, speed: GATES.speed ? SPEED[used] || 1 : 1 };
+}
+</script>
 <script>
 const API = "http://127.0.0.1:7861";
 const INSTALL = {
   mac: "curl -fsSL https://voice-studio.seemslegit.workers.dev/install.sh | sh",
   win: "irm https://voice-studio.seemslegit.workers.dev/install.ps1 | iex",
 };
-const LINES = {
-  energy: "Wait, you've never tried it? Honestly, it's so much better than I expected, and I'm not even exaggerating!",
-  calm: "Let me walk you through it slowly. First, take a breath. Then tell me, what would you like to hear today?",
-  hinglish: "Arre, seriously? Maine socha tha this will be super tough, but honestly, yeh toh kaafi easy nikla!",
+const LABELS = { normal: "Normal", excited: "Excited", calm: "Calm", deadpan: "Deadpan", serious: "Serious", curious: "Curious" };
+const HINTS = {
+  normal: "Like you're talking to a friend.",
+  excited: "Smile while you say it.",
+  calm: "Slow down, almost whisper.",
+  deadpan: "Flat, like you couldn't care less.",
+  serious: "Lower and firmer.",
+  curious: "Lean in, like it's a secret.",
 };
+const LINES = {
+  en: {
+    normal: "I usually take the long way home, just to clear my head a little.",
+    excited: "No way, we actually got it! I can't believe this is happening!",
+    calm: "It's okay. Take your time, there's no rush at all tonight.",
+    deadpan: "Oh great. Another meeting that could have been an email.",
+    serious: "Listen carefully. Do not open that door until I get back.",
+    curious: "Wait, did you hear that? I think someone's still inside.",
+  },
+  hi: {
+    normal: "मुझे लंबे रास्ते से घर जाना पसंद है, बस दिमाग़ थोड़ा हल्का हो जाता है।",
+    excited: "अरे वाह, हमें सच में मिल गया! मुझे यक़ीन ही नहीं हो रहा!",
+    calm: "कोई बात नहीं। आराम से करो, आज रात कोई जल्दी नहीं है।",
+    deadpan: "वाह, बहुत बढ़िया। एक और मीटिंग जो बस एक ईमेल हो सकती थी।",
+    serious: "ध्यान से सुनो। मेरे वापस आने तक वो दरवाज़ा मत खोलना।",
+    curious: "रुको, तुमने वो सुना? मुझे लगता है अंदर अभी भी कोई है।",
+  },
+};
+const FACE = {
+  normal: '<circle cx="17" cy="20" r="2.6"/><circle cx="31" cy="20" r="2.6"/><path d="M15 29q9 8 18 0" fill="none"/>',
+  excited: '<path d="M17 14l1.6 3.4 3.6.4-2.7 2.4.8 3.6-3.3-1.9-3.3 1.9.8-3.6-2.7-2.4 3.6-.4z M31 14l1.6 3.4 3.6.4-2.7 2.4.8 3.6-3.3-1.9-3.3 1.9.8-3.6-2.7-2.4 3.6-.4z" class="fill"/><path d="M14 28q10 2 20 0q-2 10-10 10t-10-10z" class="fill"/>',
+  calm: '<path d="M13 21q4 3 8 0M27 21q4 3 8 0" fill="none"/><path d="M18 30q6 4 12 0" fill="none"/>',
+  deadpan: '<path d="M12 18h9M27 18h9" fill="none"/><circle cx="17" cy="21" r="2.2"/><circle cx="31" cy="21" r="2.2"/><path d="M17 31h14" fill="none"/>',
+  serious: '<path d="M12 14l9 4M36 14l-9 4" fill="none"/><circle cx="17" cy="21" r="2.4"/><circle cx="31" cy="21" r="2.4"/><path d="M16 32q8-5 16 0" fill="none"/>',
+  curious: '<path d="M12 13q5-4 9 0" fill="none"/><path d="M27 17h9" fill="none"/><circle cx="18" cy="20" r="2.6"/><circle cx="32" cy="21" r="2.6"/><circle cx="25" cy="31" r="3.2" fill="none"/>',
+};
+const face = (m) => `<svg viewBox="-4 -4 56 56" style="--c: var(--m-${m})"><g class="guide"><circle cx="24" cy="24" r="22.5"/><path d="M24 -2v52M-2 22q26 6 52 0"/></g><circle class="head" cx="24" cy="24" r="20"/><g class="feat">${FACE[m]}</g></svg>`;
+function burst(text, el) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const r = (el || document.body).getBoundingClientRect(), b = document.createElement("div");
+  b.className = "burst";
+  b.style.left = `${r.left + r.width / 2}px`; b.style.top = `${r.top + Math.min(r.height / 2, 120)}px`;
+  b.innerHTML = `<svg viewBox="0 0 200 120"><path d="M100 4l14 26 30-14-4 32 34 6-26 22 22 26-34-2-4 32-28-20-28 20-4-32-34 2 22-26-26-22 34-6-4-32 30 14z"/></svg><span></span>`;
+  b.querySelector("span").textContent = text;
+  $("bursts").append(b);
+  setTimeout(() => b.remove(), 1100);
+}
+const REQUIRED = ["normal", "excited"];
+const SR = 24000;
 const $ = (id) => document.getElementById(id);
-let engine = null, selected = null, pending = null, recorder = null, line = "energy", adding = false, running = false, timer = null;
+let engine = null, selected = null, recorder = null, timer = null, running = false;
+let wiz = null, take = null, job = null, overrides = new Map(), playIndex = -1;
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch {} },
 };
 
+let dbConn = null;
 function db() {
+  if (dbConn) return Promise.resolve(dbConn);
   return new Promise((ok, fail) => {
-    const req = indexedDB.open("voice-studio", 1);
-    req.onupgradeneeded = () => req.result.createObjectStore("voices", { keyPath: "id" });
-    req.onsuccess = () => ok(req.result);
+    const req = indexedDB.open("voice-studio", 2);
+    req.onupgradeneeded = (e) => {
+      const d = req.result;
+      if (e.oldVersion < 1) d.createObjectStore("voices", { keyPath: "id" });
+      if (e.oldVersion >= 1 && e.oldVersion < 2) {
+        const cur = req.transaction.objectStore("voices").openCursor();
+        cur.onsuccess = () => {
+          const c = cur.result;
+          if (!c) return;
+          const v = c.value;
+          if (!v.moods) c.update({ id: v.id, name: v.name, version: 2, created: Date.now(), moods: { normal: [{ text: v.text, wav: v.wav, seconds: v.seconds, lang: "en", warnings: 0 }] } });
+          c.continue();
+        };
+      }
+    };
+    req.onblocked = () => banner("Close other Voice Studio tabs so this one can update, then reload.");
+    req.onsuccess = () => {
+      dbConn = req.result;
+      dbConn.onversionchange = () => { dbConn.close(); dbConn = null; banner("Voice Studio was updated in another tab. Reload this page."); };
+      ok(dbConn);
+    };
     req.onerror = () => fail(req.error);
   });
 }
@@ -287,8 +674,12 @@ async function tx(mode, fn) {
     const t = d.transaction("voices", mode), r = fn(t.objectStore("voices"));
     t.oncomplete = () => ok(r && r.result);
     t.onerror = () => fail(t.error);
+    t.onabort = () => fail(t.error);
   });
 }
+function banner(msg) { $("dbBanner").textContent = msg; $("dbBanner").classList.toggle("hidden", !msg); }
+const moodsOf = (pack) => MOOD_NAMES.filter((m) => pack?.moods?.[m]?.length);
+async function currentPack() { return selected ? tx("readonly", (s) => s.get(selected)) : null; }
 
 async function renderVoices() {
   const list = (await tx("readonly", (s) => s.getAll())) || [];
@@ -297,109 +688,382 @@ async function renderVoices() {
   for (const v of list) {
     const el = document.createElement("div");
     el.className = "voice" + (v.id === selected ? " sel" : "");
-    el.innerHTML = `<span class="tick"></span><span class="name"></span><span class="muted"></span><button class="x">Delete</button>`;
+    el.innerHTML = `<span class="tick"></span><span class="name"></span><span class="muted"></span><span class="pack-actions"><button class="ed" title="Hear and edit" aria-label="Hear and edit">✎</button><button class="exp" title="Download a backup" aria-label="Download a backup">⤓</button><button class="x" title="Delete" aria-label="Delete">✕</button></span>`;
     el.querySelector(".name").textContent = v.name;
-    el.querySelector(".muted").textContent = `${v.seconds.toFixed(1)}s`;
+    const n = moodsOf(v).length;
+    el.querySelector(".muted").textContent = n === 1 ? "1 mood" : `${n} moods`;
     el.onclick = () => { selected = v.id; store.set("voice", v.id); renderVoices(); };
+    el.querySelector(".exp").onclick = (e) => { e.stopPropagation(); exportPack(v); };
+    el.querySelector(".ed").onclick = (e) => { e.stopPropagation(); editPack(v); };
     el.querySelector(".x").onclick = async (e) => {
       e.stopPropagation();
-      if (confirm(`Delete "${v.name}"?`)) { await tx("readwrite", (s) => s.delete(v.id)); renderVoices(); }
+      if (confirm(`Delete "${v.name}"? Download it first if you want a backup.`)) { await tx("readwrite", (s) => s.delete(v.id)); renderVoices(); }
     };
     $("voices").append(el);
   }
-  const showDrop = !pending && (adding || !list.length);
-  $("drop").classList.toggle("hidden", !showDrop);
-  $("addVoice").classList.toggle("hidden", showDrop || !!pending);
-  updateEstimate();
+  const wizardOpen = !!wiz;
+  const dropHidden = !wizardOpen || !!take || wiz?.step >= MOOD_NAMES.length;
+  $("drop").classList.toggle("hidden", dropHidden);
+  $("recBar").classList.toggle("hidden", dropHidden);
+  $("addRow").classList.toggle("hidden", wizardOpen);
+  document.body.classList.toggle("wizard", wizardOpen);
+  renderMoodKeys(list.find((v) => v.id === selected));
+  if (!list.length && !wizardOpen) startWizard();
+  refreshLines();
 }
 
-async function toWav(blob) {
-  const ctx = new OfflineAudioContext(1, 1, 24000);
-  const decoded = await ctx.decodeAudioData(await blob.arrayBuffer());
-  const off = new OfflineAudioContext(1, Math.ceil(decoded.duration * 24000), 24000);
-  const src = off.createBufferSource();
-  src.buffer = decoded; src.connect(off.destination); src.start();
-  const pcm = (await off.startRendering()).getChannelData(0);
+function renderMoodKeys(pack) {
+  const box = $("moodKeys");
+  box.innerHTML = "";
+  MOOD_NAMES.forEach((m, i) => {
+    const b = document.createElement("button");
+    const lit = wiz ? !!wiz.takes[m] : !!pack?.moods?.[m]?.length;
+    b.className = `mkey${lit ? " lit" : ""}${wiz && wiz.step === i ? " cur" : ""}${!wiz && !lit ? " off" : ""}`;
+    b.style.setProperty("--c", `var(--m-${m})`);
+    b.innerHTML = `<span class="lamp"></span><span class="face">${face(m)}</span><span></span>`;
+    b.lastChild.textContent = LABELS[m];
+    b.title = wiz ? `Record ${LABELS[m].toLowerCase()}` : lit ? `Play your ${LABELS[m].toLowerCase()} take` : `No ${LABELS[m].toLowerCase()} take yet. Edit the pack to add one.`;
+    b.disabled = wiz ? !!recorder : !lit;
+    b.onclick = () => {
+      if (!wiz) return playSample(pickSample(pack.moods[m]));
+      take = null; wiz.step = i; renderWizard();
+    };
+    box.append(b);
+  });
+}
+
+function encodeWav(pcm) {
   const buf = new ArrayBuffer(44 + pcm.length * 2), v = new DataView(buf);
   const w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
   w(0, "RIFF"); v.setUint32(4, 36 + pcm.length * 2, true); w(8, "WAVEfmt ");
   v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-  v.setUint32(24, 24000, true); v.setUint32(28, 48000, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  v.setUint32(24, SR, true); v.setUint32(28, SR * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
   w(36, "data"); v.setUint32(40, pcm.length * 2, true);
   pcm.forEach((x, i) => v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, x)) * 0x7fff, true));
-  return { wav: buf, seconds: decoded.duration };
+  return buf;
+}
+async function decodePcm(blob) {
+  const ctx = new OfflineAudioContext(1, 1, SR);
+  const decoded = await ctx.decodeAudioData(await blob.arrayBuffer());
+  const off = new OfflineAudioContext(1, Math.max(1, Math.ceil(decoded.duration * SR)), SR);
+  const src = off.createBufferSource();
+  src.buffer = decoded; src.connect(off.destination); src.start();
+  return (await off.startRendering()).getChannelData(0);
 }
 
-function showForm() {
-  $("newVoice").classList.remove("hidden");
-  $("drop").classList.add("hidden"); $("addVoice").classList.add("hidden");
-}
-
-async function autoTranscribe() {
-  $("vtext").value = ""; $("vhint").textContent = "";
-  if (!engine) { $("vtext").placeholder = "Type exactly what you said in the recording."; return; }
-  $("vtext").placeholder = "Listening to your recording…"; $("save").disabled = true;
-  try {
-    const res = await fetch(`${API}/api/transcribe`, { method: "POST", body: pending.wav });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-    $("vtext").value = data.text;
-    $("vhint").textContent = "· auto-transcribed, fix any misheard words";
-  } catch {
-    $("vtext").placeholder = "Couldn't transcribe it. Type exactly what you said.";
+const db20 = (x) => 20 * Math.log10(Math.max(x, 1e-9));
+function analyze(pcm) {
+  const F = 480, n = Math.floor(pcm.length / F), rms = new Float32Array(n);
+  let clipped = 0, total = 0;
+  for (let i = 0; i < pcm.length; i++) { const a = Math.abs(pcm[i]); if (a >= 0.99) clipped++; total += a * a; }
+  for (let f = 0; f < n; f++) { let s = 0; for (let j = 0; j < F; j++) { const x = pcm[f * F + j]; s += x * x; } rms[f] = Math.sqrt(s / F); }
+  const peak = n ? Math.max(...rms) : 0, gate = peak * 10 ** (-30 / 20);
+  const speechIdx = [];
+  for (let f = 0; f < n; f++) if (rms[f] >= gate && rms[f] > 1e-4) speechIdx.push(f);
+  const mean = (arr) => (arr.length ? Math.sqrt(arr.reduce((a, x) => a + x * x, 0) / arr.length) : 0);
+  const speechRms = mean(speechIdx.map((f) => rms[f]));
+  const sorted = [...rms].sort((a, b) => a - b), quiet = sorted.slice(0, Math.max(1, Math.floor(n / 10)));
+  const pitches = [];
+  const W = 960;
+  for (const f of speechIdx) {
+    const start = f * F;
+    if (start + W + 400 > pcm.length) continue;
+    let e0 = 0;
+    for (let j = 0; j < W; j++) e0 += pcm[start + j] ** 2;
+    if (e0 <= 0) continue;
+    let best = 0, bestLag = 0;
+    for (let lag = 60; lag <= 343; lag++) {
+      let c = 0, e1 = 0;
+      for (let j = 0; j < W; j++) { const y = pcm[start + j + lag]; c += pcm[start + j] * y; e1 += y * y; }
+      const r = c / Math.sqrt(e0 * e1 || 1);
+      if (r > best) { best = r; bestLag = lag; }
+    }
+    if (best > 0.5) pitches.push(12 * Math.log2(SR / bestLag / 100));
   }
-  $("save").disabled = false;
+  const pMean = pitches.reduce((a, b) => a + b, 0) / (pitches.length || 1);
+  const pSpread = Math.sqrt(pitches.reduce((a, b) => a + (b - pMean) ** 2, 0) / (pitches.length || 1));
+  const first = speechIdx[0] ?? 0, last = speechIdx[speechIdx.length - 1] ?? n - 1;
+  return {
+    seconds: pcm.length / SR, speechSec: speechIdx.length * 0.02,
+    span: [Math.max(0, first * F - 0.15 * SR), Math.min(pcm.length, (last + 1) * F + 0.15 * SR)],
+    wholeDb: db20(Math.sqrt(total / (pcm.length || 1))), speechDb: db20(speechRms), noiseDb: db20(mean(quiet)),
+    clip: clipped / (pcm.length || 1), pitch: pitches.length >= 10 ? { mean: pMean, spread: pSpread } : null,
+  };
+}
+function checkTake(a) {
+  const out = [];
+  if (a.wholeDb < -50) out.push({ hard: true, msg: "We didn't hear anything. Check the microphone." });
+  else if (a.speechSec < 2.5) out.push({ hard: true, msg: "Too short. Read the whole line." });
+  if (a.seconds > 15) out.push({ msg: "That's long. Shorter clips clone better and keep generation fast." });
+  if (a.wholeDb >= -50 && a.speechDb < -35) out.push({ msg: "A bit quiet. Move closer to the mic." });
+  if (a.clip > 0.001) out.push({ msg: "Too loud, it's distorting. Move back a little." });
+  if (a.wholeDb >= -50 && a.speechDb - a.noiseDb < 20) out.push({ msg: "Lots of background noise. Try a quieter spot." });
+  return out;
+}
+function soundsLikeNormal(mood, a, n) {
+  if (mood === "normal" || !n) return false;
+  const pace = (x) => x.speechSec / Math.max(1, x.words), louder = a.speechDb - n.speechDb;
+  const p = a.pitch && n.pitch;
+  const tests = {
+    excited: [louder >= 2, p && a.pitch.spread >= n.pitch.spread * 1.15, pace(a) <= pace(n) * 0.9],
+    calm: [louder <= -2, pace(a) >= pace(n) * 1.1],
+    deadpan: [p && a.pitch.spread <= n.pitch.spread * 0.85, pace(a) >= pace(n) * 1.1],
+    serious: [p && n.pitch.mean - a.pitch.mean >= 1, louder <= -2],
+    curious: [p && a.pitch.spread >= n.pitch.spread * 1.15, pace(a) >= pace(n) * 1.1],
+  }[mood];
+  return !tests.some(Boolean);
+}
+const words = (s) => s.toLowerCase().replace(/[^\p{L}\p{M}\p{N}\s']/gu, " ").split(/\s+/).filter(Boolean);
+
+function startWizard() {
+  wiz = { lang: store.get("lineLang") || "en", step: 0, takes: {}, skipped: new Set() };
+  take = null;
+  renderWizard();
+}
+function renderWizard() {
+  const mood = MOOD_NAMES[wiz.step];
+  $("dots").innerHTML = MOOD_NAMES.map((m, i) => `<i style="--c: var(--m-${m})" class="${wiz.takes[m] ? "done" : wiz.skipped.has(m) ? "skip" : ""}${i === wiz.step ? " cur" : ""}" title="${LABELS[m]}"></i>`).join("");
+  document.querySelectorAll("#lineLang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === wiz.lang));
+  const done = wiz.step >= MOOD_NAMES.length;
+  $("finish").classList.toggle("hidden", !done);
+  if (done) renderPackList();
+  $("take").classList.toggle("hidden", !take);
+  if (!done) {
+    $("moodLabel").textContent = `${wiz.step + 1} of ${MOOD_NAMES.length} · ${LABELS[mood]}`;
+    $("drop").style.setProperty("--c", `var(--m-${mood})`);
+    $("moodFace").innerHTML = face(mood);
+    $("intro").classList.toggle("hidden", wiz.step > 0);
+    $("moodHint").textContent = HINTS[mood];
+    $("readLine").textContent = `“${LINES[wiz.lang][mood]}”`;
+    $("skip").disabled = REQUIRED.includes(mood);
+    $("skip").title = REQUIRED.includes(mood) ? "Normal and excited are needed" : "";
+  }
+  $("vwarn").textContent = "";
+  renderVoices();
+}
+function playSample(t) {
+  if (!t) return;
+  const p = $("player");
+  stopPlayback();
+  p.src = URL.createObjectURL(new Blob([t.wav], { type: "audio/wav" }));
+  p.play().catch(() => {});
+}
+function editPack(v) {
+  if (recorder) return;
+  wiz = { lang: v.moods.normal?.[0]?.lang || "en", step: MOOD_NAMES.length, takes: {}, skipped: new Set(), editId: v.id, created: v.created };
+  for (const m of moodsOf(v)) wiz.takes[m] = { ...pickSample(v.moods[m]), stats: null };
+  take = null;
+  $("vname").value = v.name;
+  renderWizard();
+}
+function renderPackList() {
+  $("finishTitle").textContent = wiz.editId ? "Edit voice pack" : "Your voice pack";
+  const ul = $("packList");
+  ul.innerHTML = "";
+  MOOD_NAMES.forEach((m, i) => {
+    const t = wiz.takes[m], li = document.createElement("li");
+    li.innerHTML = `<span class="face sm">${face(m)}</span><span class="pl-name"></span><span class="pl-info"></span>`;
+    li.querySelector(".pl-name").textContent = LABELS[m];
+    li.querySelector(".pl-info").textContent = t ? `${t.seconds.toFixed(1)}s` : "not recorded";
+    const btn = (label, title, fn) => { const b = document.createElement("button"); b.className = "mini"; b.textContent = label; b.title = title; b.onclick = fn; li.append(b); };
+    if (t) btn("▶", `Play ${LABELS[m].toLowerCase()}`, () => playSample(t));
+    btn(t ? "Redo" : "Record", t ? `Record ${LABELS[m].toLowerCase()} again` : `Record ${LABELS[m].toLowerCase()}`, () => { take = null; wiz.step = i; renderWizard(); });
+    if (t && !REQUIRED.includes(m)) btn("Remove", `Remove ${LABELS[m].toLowerCase()}`, () => { delete wiz.takes[m]; renderWizard(); });
+    ul.append(li);
+  });
+}
+function nextStep() {
+  take = null;
+  if (wiz.editId) { wiz.step = MOOD_NAMES.length; renderWizard(); return; }
+  wiz.step++;
+  while (wiz.step < MOOD_NAMES.length && wiz.takes[MOOD_NAMES[wiz.step]]) wiz.step++;
+  renderWizard();
 }
 
 async function takeAudio(blob, knownText) {
-  try {
-    pending = await toWav(blob);
-  } catch {
+  let pcm;
+  try { pcm = await decodePcm(blob); }
+  catch {
     try {
       const res = await fetch(`${API}/api/convert`, { method: "POST", body: blob });
       if (!res.ok) throw new Error((await res.json()).error);
-      pending = await toWav(await res.blob());
+      pcm = await decodePcm(await res.blob());
     } catch (e) {
-      pending = null;
       $("vwarn").textContent = engine ? `Couldn't read that file: ${e.message}` : "Couldn't read that file. Try a WAV, M4A or MP3.";
-      showForm();
       return;
     }
   }
-  $("vprev").src = URL.createObjectURL(new Blob([pending.wav], { type: "audio/wav" }));
-  const s = pending.seconds;
-  $("vwarn").textContent = s < 3 ? `Only ${s.toFixed(1)}s. Record at least 3 seconds.` :
-    s > 12 ? `${s.toFixed(1)}s is long. 3–10 seconds clones better and keeps every generation faster.` : "";
-  showForm();
-  if (knownText) { $("vtext").value = knownText; $("vhint").textContent = "· the line you read, edit if you changed words"; }
-  else autoTranscribe();
+  const raw = analyze(pcm);
+  const trimmed = pcm.slice(Math.floor(raw.span[0]), Math.ceil(raw.span[1]));
+  const a = analyze(trimmed);
+  const mood = MOOD_NAMES[wiz.step];
+  const issues = checkTake(a);
+  a.words = knownText ? words(knownText).length : 0;
+  take = { mood, pcm: trimmed, stats: a, issues, lang: wiz.lang, wav: encodeWav(trimmed) };
+  $("takeTitle").textContent = `${wiz.step + 1} of ${MOOD_NAMES.length} · ${LABELS[mood]}`;
+  $("takeTitle").style.setProperty("--c", `var(--m-${mood})`);
+  if (knownText) nudge(take);
+  $("vprev").src = URL.createObjectURL(new Blob([take.wav], { type: "audio/wav" }));
+  showChecks(take);
+  $("vtext").value = knownText || "";
+  $("vhint").textContent = knownText ? "· the line you read, edit if you changed words" : "";
+  renderWizard();
+  if (engine) transcribeTake(take, knownText);
+  else if (!knownText) $("vtext").placeholder = "Type exactly what you said in the recording.";
+}
+const NUDGE = "This sounds a lot like your normal take. Try exaggerating it a bit more.";
+function nudge(t) {
+  const normal = wiz.takes.normal;
+  t.issues = t.issues.filter((i) => i.msg !== NUDGE);
+  if (t.stats.words && !t.issues.some((i) => i.hard) && normal && soundsLikeNormal(t.mood, t.stats, normal.stats)) t.issues.push({ msg: NUDGE });
+}
+function showChecks(t) {
+  $("checks").innerHTML = "";
+  for (const i of t.issues.length ? t.issues : [{ ok: true, msg: "Sounds good." }]) {
+    const li = document.createElement("li");
+    li.textContent = i.msg; li.className = i.ok ? "ok" : i.hard ? "hard" : "";
+    $("checks").append(li);
+  }
+  const hard = t.issues.some((i) => i.hard);
+  $("keep").disabled = hard;
+  $("keep").textContent = t.issues.length && !hard ? "Use anyway" : "Use this take";
+}
+async function transcribeTake(t, knownText) {
+  if (!knownText) { $("vtext").placeholder = "Listening to your recording…"; $("keep").disabled = true; }
+  try {
+    const res = await fetch(`${API}/api/transcribe?lang=${t.lang}`, { method: "POST", body: t.wav });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    if (take !== t) return;
+    if (!knownText) {
+      $("vtext").value = data.text; $("vhint").textContent = "· auto-transcribed, fix any misheard words";
+      t.stats.words = words(data.text).length;
+      nudge(t); showChecks(t);
+    }
+    else {
+      const heard = new Set(words(data.text)), expected = words(knownText);
+      const hit = expected.filter((w) => heard.has(w)).length / (expected.length || 1);
+      if (hit < 0.7 && data.text.trim()) {
+        $("vtext").value = data.text;
+        $("vhint").textContent = "· sounds like you said something different, check this text";
+      }
+    }
+  } catch {
+    if (take === t && !knownText) $("vtext").placeholder = "Couldn't transcribe it. Type exactly what you said.";
+  }
+  if (take === t) showChecks(t);
 }
 
-function resetNew() {
-  pending = null; adding = false;
-  $("newVoice").classList.add("hidden");
-  $("vwarn").textContent = ""; $("save").disabled = false;
+$("keep").onclick = () => {
+  const text = $("vtext").value.trim();
+  if (!text) { $("vwarn").textContent = "Type what you said in the recording."; return; }
+  wiz.takes[take.mood] = { text, wav: take.wav, seconds: take.pcm.length / SR, lang: take.lang, warnings: take.issues.length, stats: { ...take.stats, words: words(text).length } };
+  wiz.skipped.delete(take.mood);
+  burst("NICE!", $("keep"));
+  nextStep();
+};
+$("redoTake").onclick = () => { take = null; renderWizard(); };
+$("skip").onclick = () => { wiz.skipped.add(MOOD_NAMES[wiz.step]); nextStep(); };
+$("quit").onclick = async () => {
+  if (Object.keys(wiz.takes).length && !confirm(wiz.editId ? "Discard your changes to this pack?" : "Discard this voice pack?")) return;
+  wiz = null; take = null;
+  $("take").classList.add("hidden"); $("finish").classList.add("hidden");
+  const list = (await tx("readonly", (s) => s.getAll())) || [];
+  if (!list.length) startWizard(); else renderVoices();
+};
+$("back").onclick = () => {
+  const missing = MOOD_NAMES.findIndex((m) => !wiz.takes[m]);
+  wiz.step = missing < 0 ? MOOD_NAMES.length - 1 : missing;
+  if (wiz.takes[MOOD_NAMES[wiz.step]]) delete wiz.takes[MOOD_NAMES[wiz.step]];
+  renderWizard();
+};
+$("addVoice").onclick = startWizard;
+document.querySelectorAll("#lineLang button").forEach((b) => b.onclick = () => { wiz.lang = b.dataset.lang; store.set("lineLang", wiz.lang); renderWizard(); });
+$("compare").onclick = async () => {
+  const p = $("player");
+  for (const m of ["normal", "excited"]) {
+    p.src = URL.createObjectURL(new Blob([wiz.takes[m].wav], { type: "audio/wav" }));
+    await p.play().catch(() => {});
+    await new Promise((r) => { p.onended = r; p.onpause = r; });
+  }
+};
+$("save").onclick = async () => {
+  if (REQUIRED.some((m) => !wiz.takes[m])) { $("vwarn").textContent = "Record your normal and excited lines first."; return; }
+  const moods = {};
+  for (const [m, t] of Object.entries(wiz.takes)) moods[m] = [{ text: t.text, wav: t.wav, seconds: t.seconds, lang: t.lang, warnings: t.warnings }];
+  const pack = { id: wiz.editId || crypto.randomUUID(), name: $("vname").value.trim() || "Me", version: 2, created: wiz.created || Date.now(), moods };
+  try { await tx("readwrite", (s) => s.put(pack)); }
+  catch (e) {
+    $("vwarn").textContent = e?.name === "QuotaExceededError" ? "Your browser is out of space for voices. Delete an old voice or download it first." : `Couldn't save: ${e?.message || e}`;
+    return;
+  }
+  navigator.storage?.persist?.().catch(() => {});
+  selected = pack.id; store.set("voice", pack.id);
+  wiz = null; take = null;
+  $("finish").classList.add("hidden");
   renderVoices();
-}
-$("addVoice").onclick = () => { adding = true; renderVoices(); };
+  burst("TA-DA!", $("voices"));
+  if (!store.get("backupTip")) { store.set("backupTip", "1"); banner("Your voice lives only in this browser. Use Download next to it to keep a backup."); }
+};
 
-function seg(group, onPick) {
-  group.querySelectorAll("button").forEach((b) => b.onclick = () => {
-    group.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
-    onPick(b);
-  });
+const toB64 = (buf) => {
+  const bytes = new Uint8Array(buf);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+};
+const fromB64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0)).buffer;
+function exportPack(v) {
+  const out = { format: "voice-studio-pack", version: 2, name: v.name, created: v.created, moods: {} };
+  for (const m of moodsOf(v)) out.moods[m] = v.moods[m].map((t) => ({ text: t.text, lang: t.lang, seconds: t.seconds, warnings: t.warnings, wav_b64: toB64(t.wav) }));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(out)], { type: "application/json" }));
+  a.download = `${v.name.replace(/[^\p{L}\p{N} _-]/gu, "") || "voice"}.voicepack.json`;
+  a.click();
 }
-seg($("lineStyle"), (b) => { line = b.dataset.line; $("readLine").textContent = `“${LINES[line]}”`; });
-$("readLine").textContent = `“${LINES[line]}”`;
+$("importBtn").onclick = () => $("packFile").click();
+$("packFile").onchange = async (e) => {
+  const f = e.target.files[0];
+  e.target.value = "";
+  if (!f) return;
+  const bad = () => { $("vwarn").textContent = "This file isn't a Voice Studio pack."; };
+  if (f.size > 25e6) return bad();
+  let data;
+  try { data = JSON.parse(await f.text()); } catch { return bad(); }
+  if (data?.format !== "voice-studio-pack" || data.version !== 2 || typeof data.moods !== "object") return bad();
+  const moods = {};
+  try {
+    for (const [m, list] of Object.entries(data.moods)) {
+      if (!MOOD_NAMES.includes(m) || !Array.isArray(list) || !list.length || list.length > 3) return bad();
+      moods[m] = [];
+      for (const t of list) {
+        const wav = fromB64(t.wav_b64);
+        const pcm = await decodePcm(new Blob([wav]));
+        const sec = pcm.length / SR;
+        if (sec < 2 || sec > 20 || typeof t.text !== "string" || !t.text.trim()) return bad();
+        moods[m].push({ text: t.text.trim(), wav, seconds: sec, lang: t.lang === "hi" ? "hi" : "en", warnings: Number(t.warnings) || 0 });
+      }
+    }
+  } catch { return bad(); }
+  if (!moods.normal) return bad();
+  const names = new Set(((await tx("readonly", (s) => s.getAll())) || []).map((v) => v.name));
+  let name = String(data.name || "Voice").slice(0, 60), k = 2;
+  while (names.has(name)) name = `${String(data.name || "Voice").slice(0, 55)} (${k++})`;
+  const pack = { id: crypto.randomUUID(), name, version: 2, created: Date.now(), moods };
+  try { await tx("readwrite", (s) => s.put(pack)); } catch (err) { $("vwarn").textContent = `Couldn't save: ${err?.message || err}`; return; }
+  selected = pack.id; store.set("voice", pack.id);
+  wiz = null; take = null; $("take").classList.add("hidden"); $("finish").classList.add("hidden");
+  renderVoices();
+};
 
 $("pick").onclick = () => $("file").click();
 $("file").onchange = (e) => { if (e.target.files[0]) takeAudio(e.target.files[0]); e.target.value = ""; };
-document.addEventListener("dragover", (e) => { e.preventDefault(); document.body.classList.add("over"); });
+document.addEventListener("dragover", (e) => { e.preventDefault(); if (wiz && !take) document.body.classList.add("over"); });
 document.addEventListener("dragleave", (e) => { if (!e.relatedTarget) document.body.classList.remove("over"); });
 document.addEventListener("drop", (e) => {
   e.preventDefault(); document.body.classList.remove("over");
   const f = e.dataTransfer.files[0];
-  if (f) takeAudio(f);
+  if (f && wiz && !take && wiz.step < MOOD_NAMES.length) takeAudio(f);
 });
 
 function drawWave(stream) {
@@ -424,13 +1088,12 @@ function drawWave(stream) {
   };
   frame();
 }
-
 $("rec").onclick = async () => {
   if (recorder) { recorder.stop(); return; }
   let stream;
   try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
-  catch { $("err").textContent = "Microphone permission was denied."; return; }
-  const chunks = [];
+  catch { $("vwarn").textContent = "Microphone permission was denied."; return; }
+  const chunks = [], line = LINES[wiz.lang][MOOD_NAMES[wiz.step]];
   recorder = new MediaRecorder(stream);
   recorder.ondataavailable = (e) => chunks.push(e.data);
   recorder.onstop = () => {
@@ -438,23 +1101,15 @@ $("rec").onclick = async () => {
     recorder = null;
     clearInterval(timer); $("recLabel").textContent = "Record"; $("rec").classList.remove("recording");
     $("wave").classList.add("hidden"); $("pick").disabled = false;
-    takeAudio(new Blob(chunks, { type: chunks[0]?.type }), LINES[line]);
+    burst("GOT IT!", $("rec"));
+    takeAudio(new Blob(chunks, { type: chunks[0]?.type }), line);
   };
   recorder.start();
   const t0 = Date.now(), tickLabel = () => { const sec = Math.floor((Date.now() - t0) / 1000); $("recLabel").textContent = `Stop · 0:${String(sec).padStart(2, "0")}`; };
   tickLabel(); timer = setInterval(tickLabel, 250);
   $("rec").classList.add("recording"); $("wave").classList.remove("hidden"); $("pick").disabled = true;
   drawWave(stream);
-};
-$("cancel").onclick = resetNew;
-$("save").onclick = async () => {
-  if (!pending) return;
-  const name = $("vname").value.trim() || "Me", text = $("vtext").value.trim();
-  if (!text) { $("vwarn").textContent = "Type what you said in the recording."; return; }
-  const id = crypto.randomUUID();
-  await tx("readwrite", (s) => s.put({ id, name, text, wav: pending.wav, seconds: pending.seconds }));
-  selected = id; store.set("voice", id);
-  resetNew();
+  renderVoices();
 };
 
 function fmt(sec) {
@@ -465,49 +1120,222 @@ function estimateSeconds(chars) {
   if (!engine) return null;
   return chars * engine.speed.sec_per_char + (engine.loaded ? 0 : engine.speed.load_seconds);
 }
-function updateEstimate() {
-  const chars = $("script").value.trim().length;
-  const est = estimateSeconds(chars);
-  $("estimate").textContent = !engine ? "" : !selected ? "Add a voice first" : chars && est != null ? `About ${fmt(est)} on this computer` : "";
-  $("go").disabled = running || !engine || !selected || !chars;
+const v2 = () => engine?.api >= 2;
+
+let plan = [];
+async function refreshLines() {
+  const pack = await currentPack();
+  const text = $("script").value;
+  const avail = moodsOf(pack).length ? moodsOf(pack) : ["normal"];
+  const acronyms = capsWords(text);
+  plan = splitSentences(text).map(({ raw, paraEnd }) => {
+    const p = pickMood(raw, avail, acronyms);
+    const manual = overrides.get(raw);
+    if (manual && avail.includes(manual)) Object.assign(p, { mood: manual, why: "your choice", manual: true, speed: GATES.speed ? SPEED[manual] || 1 : 1 });
+    return { raw, ...p, pause: pauseFor(p.speak, paraEnd) };
+  }).filter((p) => p.speak);
+  if (!job) renderLines(avail);
+  updateEstimate();
 }
-$("script").oninput = () => { store.set("draft", $("script").value); updateEstimate(); };
+function renderLines(avail) {
+  const ul = $("lines");
+  ul.innerHTML = "";
+  if (!v2()) return;
+  const rows = job ? job.plan : plan;
+  rows.forEach((p, i) => {
+    const li = document.createElement("li");
+    const st = job?.state?.[i];
+    li.className = [st?.status, i === playIndex ? "playing" : ""].join(" ");
+    li.style.setProperty("--c", `var(--m-${p.mood})`);
+    li.innerHTML = `<span class="face sm">${face(p.mood)}</span><span class="t" dir="auto"></span><span class="why"></span><span class="chip"><select aria-label="Mood"></select></span><span class="st"></span>`;
+    li.querySelector(".t").textContent = p.speak;
+    li.querySelector(".why").textContent = p.why;
+    li.querySelector(".why").title = p.why;
+    const sel = li.querySelector("select");
+    for (const m of (job ? job.moodsSent : avail)) sel.add(new Option(LABELS[m], m, false, m === p.mood));
+    sel.classList.toggle("manual", !!p.manual);
+    sel.onchange = () => {
+      if (job) { redo(i, sel.value); return; }
+      overrides.set(p.raw, sel.value); refreshLines();
+    };
+    if (job) {
+      sel.disabled = !st || st.status !== "done" && st.status !== "error" || !!job.busy;
+      li.querySelector(".st").textContent = { waiting: "waiting", running: "generating", done: "ready", error: "failed" }[st?.status] || "";
+      if (st?.status === "error") li.querySelector(".st").title = st.error || "";
+      if (job.urls[i]) {
+        const play = document.createElement("button"); play.className = "mini"; play.textContent = "▶";
+        play.onclick = () => playFrom(i, true);
+        li.append(play);
+      }
+      if (st && (st.status === "done" || st.status === "error")) {
+        const r = document.createElement("button"); r.className = "mini"; r.textContent = "↻"; r.title = "Make a new take of this line";
+        r.disabled = !!job.busy;
+        r.onclick = () => redo(i);
+        li.append(r);
+      }
+    }
+    ul.append(li);
+  });
+}
+
+function updateEstimate() {
+  const chars = plan.reduce((a, p) => a + p.speak.length, 0);
+  const est = estimateSeconds(chars);
+  $("estimate").textContent = !engine ? "" : !selected ? "Make a voice pack first" : job?.label ? job.label : chars && est != null ? `About ${fmt(est)} on this computer` : "";
+  $("go").disabled = running || !engine || !selected || !chars || !!job?.busy;
+}
+let typing;
+$("script").oninput = () => { store.set("draft", $("script").value); if (job && !job.busy) job.label = ""; clearTimeout(typing); typing = setTimeout(refreshLines, 250); };
 $("close").onclick = () => { $("out").pause(); $("job").classList.add("hidden"); };
+document.querySelectorAll("#scriptLang button").forEach((b) => b.onclick = () => {
+  document.querySelectorAll("#scriptLang button").forEach((x) => x.classList.toggle("on", x === b));
+  store.set("scriptLang", b.dataset.lang);
+});
+const scriptLang = () => document.querySelector("#scriptLang button.on").dataset.lang || null;
+$("helpBtn").onclick = () => {
+  const open = $("helpPanel").classList.toggle("hidden") === false;
+  $("helpBtn").setAttribute("aria-expanded", open);
+};
+document.querySelectorAll("#helpPanel [data-ex]").forEach((b) => b.onclick = () => {
+  const t = $("script"), at = t.selectionStart ?? t.value.length;
+  const pre = t.value.slice(0, at), insert = (pre && !/\s$/.test(pre) ? " " : "") + b.dataset.ex + " ";
+  t.value = pre + insert + t.value.slice(at);
+  t.focus(); t.selectionStart = t.selectionEnd = at + insert.length;
+  t.oninput();
+});
+
+function pickSample(list) {
+  return [...list].sort((a, b) => a.warnings - b.warnings || b.seconds - a.seconds)[0];
+}
 
 $("go").onclick = async () => {
-  const voice = await tx("readonly", (s) => s.get(selected));
-  const text = $("script").value.trim();
-  const bytes = new Uint8Array(voice.wav);
-  let bin = "";
-  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  if (job && job.urls.some(Boolean) && !confirm("Start a new script? The current audio will be cleared. Download it first if you need it.")) return;
+  const pack = await currentPack();
+  if (!pack) return;
   $("err").textContent = "";
+  if (!v2()) return goV1(pack);
+  await refreshLines();
+  const used = [...new Set(plan.map((p) => p.mood))];
+  const moods = {};
+  for (const m of used) { const s = pickSample(pack.moods[m]); moods[m] = { text: s.text, wav_b64: toB64(s.wav) }; }
+  const body = { api: 2, language: scriptLang(), moods, sentences: plan.map((p) => ({ text: p.speak, mood: p.mood, pause: p.pause, speed: p.speed })) };
+  running = true; updateEstimate();
+  let res, data;
+  try {
+    res = await fetch(`${API}/api/jobs`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    data = await res.json();
+  } catch { running = false; $("err").textContent = "Lost connection to the engine."; return checkEngine(); }
+  running = false;
+  if (!res.ok) { $("err").textContent = res.status === 409 ? "Another tab or job is generating. Wait for it to finish." : data.error; updateEstimate(); return; }
+  stopPlayback();
+  job = { id: data.id, plan: plan.map((p) => ({ ...p })), moodsSent: used, urls: [], state: [], busy: true, started: Date.now(), autoplay: true, label: "Starting" };
+  $("cancelJob").classList.remove("hidden"); $("playAll").classList.remove("hidden"); $("dlAll").classList.add("hidden");
+  poll();
+};
+
+async function poll() {
+  if (!job) return;
+  const me = job;
+  let s;
+  try { s = await (await fetch(`${API}/api/jobs/${me.id}`)).json(); }
+  catch { me.busy = false; $("err").textContent = "Lost connection to the engine."; renderLines(); updateEstimate(); return; }
+  if (job !== me) return;
+  if (s.error === "not found" || !s.sentences) { me.busy = false; $("err").textContent = "The engine restarted and this job was lost. Generate again."; renderLines(); updateEstimate(); return; }
+  me.state = s.sentences;
+  for (let i = 0; i < s.sentences.length; i++) {
+    if (s.sentences[i].status === "done" && !me.urls[i]) {
+      const r = await fetch(`${API}/api/jobs/${me.id}/sentences/${i}`);
+      if (r.ok) me.urls[i] = URL.createObjectURL(await r.blob());
+      if (me.autoplay && playIndex < 0 && i === 0) playFrom(0, false);
+      else if (playIndex === i && $("player").paused) playFrom(i, false);
+    }
+  }
+  const active = s.status === "queued" || s.status === "running" || s.redo !== null;
+  me.busy = active;
+  const elapsed = (Date.now() - me.started) / 1000, total = estimateSeconds(me.plan.reduce((a, p) => a + p.speak.length, 0));
+  me.label = s.status === "queued" ? "Loading the voice model" : s.redo !== null ? `Making a new take of line ${s.redo + 1}` : s.status === "running" ? `Line ${Math.min(s.done + 1, s.total)} of ${s.total} · ${total - elapsed > 5 ? `about ${fmt(total - elapsed)} left` : "taking longer than usual, your computer may be busy"}` : "";
+  if (s.status === "error") $("err").textContent = s.error;
+  if (!active) {
+    $("cancelJob").classList.add("hidden");
+    const failed = s.sentences.filter((x) => x.status === "error").length;
+    if (s.status === "done" && !alreadyWrapped(me)) burst("THAT'S A WRAP!", $("lines"));
+    me.label = s.status === "cancelled" ? "Stopped. Finished lines are kept." : failed ? `${failed} line${failed > 1 ? "s" : ""} failed. Tap ↻ to try again.` : `Done in ${fmt(elapsed)}`;
+    if (me.urls.some(Boolean)) { $("dlAll").href = `${API}/api/jobs/${me.id}/audio`; await setDownload(me); }
+    checkEngine();
+  }
+  renderLines(); updateEstimate();
+  $("estimate").textContent = me.label;
+  if (active) setTimeout(poll, 1500);
+}
+function alreadyWrapped(me) { const seen = me.wrapped; me.wrapped = true; return seen; }
+async function setDownload(me) {
+  const r = await fetch(`${API}/api/jobs/${me.id}/audio`);
+  if (!r.ok || job !== me) return;
+  if (me.dl) URL.revokeObjectURL(me.dl);
+  me.dl = URL.createObjectURL(await r.blob());
+  $("dlAll").href = me.dl;
+  $("dlAll").classList.remove("hidden");
+}
+async function redo(i, mood) {
+  const me = job;
+  if (!me || me.busy) return;
+  const res = await fetch(`${API}/api/jobs/${me.id}/sentences/${i}/redo`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(mood ? { mood } : {}) });
+  if (!res.ok) { $("err").textContent = (await res.json()).error; return; }
+  if (mood) Object.assign(me.plan[i], { mood, why: "your choice", manual: true });
+  if (me.urls[i]) URL.revokeObjectURL(me.urls[i]);
+  me.urls[i] = null; me.busy = true; me.autoplay = false;
+  $("dlAll").classList.add("hidden");
+  renderLines(); poll();
+}
+$("cancelJob").onclick = async () => { if (job) await fetch(`${API}/api/jobs/${job.id}/cancel`, { method: "POST" }).catch(() => {}); };
+
+$("player").addEventListener("play", () => document.body.classList.add("playing"));
+["pause", "ended"].forEach((e) => $("player").addEventListener(e, () => document.body.classList.remove("playing")));
+function stopPlayback() { const p = $("player"); p.pause(); p.onended = null; playIndex = -1; }
+function playFrom(i, user) {
+  const p = $("player");
+  if (!job) return;
+  if (user) job.autoplay = true;
+  playIndex = i;
+  renderLines();
+  if (!job.urls[i]) return;
+  p.src = job.urls[i];
+  p.onended = () => {
+    const nxt = i + 1;
+    if (nxt >= job.plan.length) { playIndex = -1; renderLines(); return; }
+    if (job.urls[nxt]) setTimeout(() => playFrom(nxt, false), job.plan[i].pause * 1000);
+    else { playIndex = nxt; renderLines(); }
+  };
+  p.play().catch(() => { playIndex = -1; renderLines(); });
+}
+$("playAll").onclick = () => { if (playIndex >= 0 && !$("player").paused) stopPlayback(), renderLines(); else playFrom(0, true); };
+
+async function goV1(pack) {
+  const voice = pickSample(pack.moods.normal);
+  const text = $("script").value.trim();
   running = true; updateEstimate();
   let res;
   try {
     res = await fetch(`${API}/api/jobs`, {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, ref_text: voice.text, ref_audio: btoa(bin) }),
+      body: JSON.stringify({ text, ref_text: voice.text, ref_audio: toB64(voice.wav) }),
     });
   } catch { running = false; $("err").textContent = "Lost connection to the engine."; return checkEngine(); }
-  const job = await res.json();
-  if (!res.ok) { running = false; $("err").textContent = job.error; updateEstimate(); return; }
+  const j = await res.json();
+  if (!res.ok) { running = false; $("err").textContent = j.error; updateEstimate(); return; }
   const total = estimateSeconds(text.length), started = Date.now();
   $("job").classList.remove("hidden"); $("result").classList.add("hidden"); $("progress").classList.remove("hidden");
-  $("jobTitle").textContent = `Generating with ${voice.name}`; $("ptext").textContent = ""; $("fill").style.width = "0";
-  const finish = (msg) => {
-    running = false;
-    if (msg) { $("err").textContent = msg; $("job").classList.add("hidden"); }
-    updateEstimate();
-  };
+  $("jobTitle").textContent = `Generating with ${pack.name}`; $("ptext").textContent = ""; $("fill").style.width = "0";
+  const finish = (msg) => { running = false; if (msg) { $("err").textContent = msg; $("job").classList.add("hidden"); } updateEstimate(); };
   const tick = async () => {
     let s;
-    try { s = await (await fetch(`${API}/api/jobs/${job.id}`)).json(); }
+    try { s = await (await fetch(`${API}/api/jobs/${j.id}`)).json(); }
     catch { return finish("Lost connection to the engine."); }
     const elapsed = (Date.now() - started) / 1000;
     $("fill").style.width = `${Math.min(99, (s.done / s.total) * 100 || (elapsed / total) * 100)}%`;
     if (s.status === "error") return finish(s.error);
     if (s.status === "done") {
-      const url = URL.createObjectURL(await (await fetch(`${API}/api/jobs/${job.id}/audio`)).blob());
+      const url = URL.createObjectURL(await (await fetch(`${API}/api/jobs/${j.id}/audio`)).blob());
       $("out").src = url; $("dl").href = url;
       $("jobTitle").textContent = "Ready"; $("ptext").textContent = `took ${fmt(elapsed)}`;
       $("progress").classList.add("hidden"); $("result").classList.remove("hidden");
@@ -519,7 +1347,7 @@ $("go").onclick = async () => {
     setTimeout(tick, 2000);
   };
   tick();
-};
+}
 
 function setStatus(state, text) {
   const el = $("status");
@@ -534,12 +1362,13 @@ async function checkEngine() {
     engine = await (await fetch(`${API}/api/status`)).json();
     setStatus("on", "Engine ready");
     $("install").classList.add("hidden");
+    if (!v2() && !$("dbBanner").textContent) banner("Your engine is out of date, so moods are off. Run the install command again to update it.");
   } catch {
     engine = null;
     setStatus("off", "Engine not installed");
     $("install").classList.remove("hidden");
   }
-  updateEstimate();
+  refreshLines();
 }
 
 if (matchMedia("(pointer: coarse) and (max-width: 900px)").matches || /iPhone|iPad|Android/i.test(navigator.userAgent)) {
@@ -551,13 +1380,19 @@ if (matchMedia("(pointer: coarse) and (max-width: 900px)").matches || /iPhone|iP
 }
 const isWin = navigator.platform.startsWith("Win");
 $("cmd").textContent = isWin ? INSTALL.win : INSTALL.mac;
-seg(document.querySelector("#install .seg"), (b) => { $("cmd").textContent = INSTALL[b.dataset.os]; });
+document.querySelectorAll("#install .seg button").forEach((b) => b.onclick = () => {
+  document.querySelectorAll("#install .seg button").forEach((x) => x.classList.toggle("on", x === b));
+  $("cmd").textContent = INSTALL[b.dataset.os];
+});
 if (isWin) document.querySelector("[data-os=win]").click();
 $("copy").onclick = () => navigator.clipboard.writeText($("cmd").textContent).then(() => $("copy").textContent = "Copied");
 $("retry").onclick = checkEngine;
 
 $("script").value = store.get("draft") || "";
+const savedLang = store.get("scriptLang");
+document.querySelectorAll("#scriptLang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === (savedLang ?? "")));
 selected = store.get("voice");
+navigator.storage?.estimate?.().then((e) => { if (e.quota && e.quota < 120e6) banner("This looks like a private window. Voices will be lost when it closes."); }).catch(() => {});
 renderVoices();
 checkEngine();
 </script>

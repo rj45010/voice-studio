@@ -1,0 +1,67 @@
+import { readFileSync } from "node:fs";
+import assert from "node:assert/strict";
+
+const html = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
+const src = html.match(/<script id="rules">([\s\S]*?)<\/script>/)[1];
+const { splitSentences, pickMood, pauseFor, capsWords } = new Function(`${src}; return { splitSentences, pickMood, pauseFor, capsWords };`)();
+const all = ["normal", "excited", "calm", "deadpan", "serious", "curious"];
+const split = (t) => splitSentences(t).map((s) => s.raw);
+
+assert.deepEqual(split("Hello there. How are you? Great!"), ["Hello there.", "How are you?", "Great!"]);
+assert.deepEqual(split("Mr. Smith paid 3.5 dollars. Then left."), ["Mr. Smith paid 3.5 dollars.", "Then left."]);
+assert.deepEqual(split("J. K. Rowling wrote it. Wow."), ["J. K. Rowling wrote it.", "Wow."]);
+assert.deepEqual(split('"I\'m fine," I said sarcastically. Next.'), ['"I\'m fine," I said sarcastically.', "Next."]);
+assert.deepEqual(split('He said "Stop! Now." and left. Okay.'), ['He said "Stop! Now." and left.', "Okay."]);
+assert.deepEqual(split("“Go!” she yelled. Fine."), ["“Go!” she yelled.", "Fine."]);
+assert.deepEqual(split("Wait?! Really… Yes."), ["Wait?!", "Really…", "Yes."]);
+assert.deepEqual(split("मैं ठीक हूँ। तुम कैसे हो?"), ["मैं ठीक हूँ।", "तुम कैसे हो?"]);
+assert.deepEqual(split("Arre yaar, kya scene hai? Chal theek hai."), ["Arre yaar, kya scene hai?", "Chal theek hai."]);
+assert.deepEqual(split("你好。我很好！"), ["你好。", "我很好！"]);
+assert.deepEqual(split("No end punctuation"), ["No end punctuation"]);
+assert.deepEqual(split("One.\n\nTwo."), ["One.", "Two."]);
+assert.equal(splitSentences("One.\n\nTwo.")[0].paraEnd, true);
+assert.equal(splitSentences("One.\n\nTwo.")[1].paraEnd, false);
+assert.deepEqual(split("Line one\nline two."), ["Line one line two."]);
+const long = ("word ".repeat(140) + "end, " + "more ".repeat(60)).trim() + ".";
+assert.ok(split(long).every((s) => s.length <= 600) && split(long).length === 2);
+
+let m = pickMood('"I\'m fine," I said sarcastically.', all);
+assert.equal(m.speak, "I'm fine.");
+assert.equal(m.mood, "deadpan");
+m = pickMood('"Run," he said.', all);
+assert.equal(m.speak, "Run.");
+assert.equal(m.mood, "normal");
+assert.equal(m.why, "direction removed");
+assert.equal(pickMood('""', all).speak, '""');
+assert.equal(pickMood("This is huge news!", all).mood, "excited");
+assert.equal(pickMood("Do you hear that?", all).mood, "curious");
+assert.equal(pickMood("Wait?!", all).mood, "excited");
+assert.equal(pickMood("Okay.", all).mood, "normal");
+m = pickMood("(calm) Take a breath.", all);
+assert.equal(m.mood, "calm");
+assert.equal(m.speak, "Take a breath.");
+m = pickMood("(whatever) Fine.", all);
+assert.equal(m.speak, "Fine.");
+assert.equal(m.mood, "normal");
+assert.equal(pickMood("[laughter] You got me.", all).speak, "You got me.");
+assert.equal(pickMood('"मैं ठीक हूँ," मैंने ताने से कहा।', all).mood, "deadpan");
+assert.equal(pickMood('"मैं ठीक हूँ," मैंने ताने से कहा।', all).speak, "मैं ठीक हूँ.");
+assert.equal(pickMood('"Hi," she asked casually.', all).mood, "curious");
+assert.equal(pickMood('"Hi," she unasked.', all).mood, "normal");
+m = pickMood('"I\'m fine," I said sarcastically.', ["normal", "calm"]);
+assert.equal(m.wanted, "deadpan");
+assert.equal(m.mood, "calm");
+assert.match(m.why, /using calm, no deadpan sample/);
+assert.equal(pickMood("Great!", ["normal"]).mood, "normal");
+assert.equal(pickMood("THIS is VERY big.", all).mood, "normal");
+assert.ok(capsWords("NASA said NASA. Hello hello").has("nasa"));
+assert.ok(!capsWords("Hello HELLO").has("hello"));
+
+assert.equal(pauseFor("Hello.", false), 0.35);
+assert.equal(pauseFor("Hello!", false), 0.4);
+assert.equal(pauseFor("Hmm…", false), 0.7);
+assert.equal(pauseFor("Hmm...", false), 0.7);
+assert.equal(pauseFor("Hello.", true), 0.9);
+assert.equal(pauseFor('"Go!"', false), 0.4);
+
+console.log("rules: all passed");
