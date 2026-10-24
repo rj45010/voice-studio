@@ -13,11 +13,20 @@ if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
   $env:Path = "$HOME\.local\bin;$env:Path"
 }
 
+$Cpu = (Get-CimInstance Win32_Processor | Select-Object -First 1).Name.Trim()
+$Gpus = @(Get-CimInstance Win32_VideoController | ForEach-Object { $_.Name })
+$RamGb = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB)
+$Nvidia = ($Gpus -match "NVIDIA").Count -gt 0
+Say "Found: $Cpu, $RamGb GB RAM, graphics: $($Gpus -join ', ')"
+if ($Nvidia) { Write-Host "Using the NVIDIA GPU (fast)." }
+else { Write-Host "No NVIDIA GPU, so the voice runs on the CPU. It works, but expect minutes per sentence." }
+if ($RamGb -lt 8) { Write-Host "Warning: under 8 GB RAM. The voice model may not fit." -ForegroundColor Yellow }
+
 Say "Installing the voice engine (about 1 GB, more with an NVIDIA GPU)"
-if (Get-Command nvidia-smi -ErrorAction SilentlyContinue) {
-  uv tool install --python 3.12 omnivoice --index https://download.pytorch.org/whl/cu128 --index-strategy unsafe-best-match
+if ($Nvidia) {
+  uv tool install --force --python 3.12 omnivoice --with torch==2.11.0+cu128 --with torchaudio==2.11.0+cu128 --index https://download.pytorch.org/whl/cu128 --index-strategy unsafe-best-match
 } else {
-  uv tool install --python 3.12 omnivoice
+  uv tool install --force --python 3.12 omnivoice --with torch==2.11.0 --with torchaudio==2.11.0
 }
 $Py = Join-Path (uv tool dir) "omnivoice\Scripts\python.exe"
 $Pyw = Join-Path (uv tool dir) "omnivoice\Scripts\pythonw.exe"

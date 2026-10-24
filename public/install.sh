@@ -15,7 +15,8 @@ if ! command -v uv >/dev/null 2>&1; then
 fi
 
 say "Installing the voice engine (about 1 GB)"
-uv tool install --python 3.12 omnivoice
+# torchaudio lags torch releases; unpinned, uv mixes versions and the native lib fails to load
+uv tool install --force --python 3.12 omnivoice --with torch==2.11.0 --with torchaudio==2.11.0
 PY="$(uv tool dir)/omnivoice/bin/python"
 
 say "Downloading Voice Studio"
