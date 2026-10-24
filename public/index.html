@@ -342,7 +342,7 @@ h1 { white-space: nowrap; font-size: 24px; }
   </header>
 
   <div id="install" class="hidden">
-    <strong>Install the engine once</strong><span class="note">about 4.5 GB, paste into Terminal</span>
+    <strong>Install the engine once</strong><span class="note">about 4.5 GB, paste into Terminal. The voice model is for <a href="https://huggingface.co/k2-fsa/OmniVoice#license" target="_blank" rel="noopener">non-commercial use only</a>.</span>
     <div class="seg"><button data-os="mac" class="on">Mac / Linux</button><button data-os="win">Windows</button></div>
     <pre id="cmd"></pre>
     <button id="copy">Copy</button><button id="retry" class="primary">I've installed it</button>
@@ -691,7 +691,7 @@ async function renderVoices() {
     const el = document.createElement("div");
     el.className = "voice" + (v.id === selected ? " sel" : "");
     el.innerHTML = `<span class="tick"></span><span class="name"></span><span class="muted"></span><span class="pack-actions"><button class="ed" title="Hear and edit" aria-label="Hear and edit">✎</button><button class="exp" title="Download a backup" aria-label="Download a backup">⤓</button><button class="x" title="Delete" aria-label="Delete">✕</button></span>`;
-    el.querySelector(".name").textContent = v.name;
+    el.querySelector(".name").textContent = el.querySelector(".name").title = v.name;
     const n = moodsOf(v).length;
     el.querySelector(".muted").textContent = n === 1 ? "1 mood" : `${n} moods`;
     el.onclick = () => { selected = v.id; store.set("voice", v.id); renderVoices(); };
