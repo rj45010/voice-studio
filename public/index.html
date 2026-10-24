@@ -126,7 +126,8 @@ h1 { margin: 0; font: 800 26px/1 "DM Sans", system-ui, sans-serif; letter-spacin
 .pack-actions { margin-left: auto; display: flex; gap: 2px; }
 .bank .voice .pack-actions button { background: none; box-shadow: none; padding: 4px 8px; font-size: 15px; color: var(--ink-2); border-radius: 6px; }
 .bank .voice .pack-actions button:hover { color: var(--accent-ink); background: none; }
-.alt { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; font-size: 14px; color: var(--ink-2); white-space: nowrap; }
+.alt { display: flex; gap: 10px; }
+.key.sm { padding: 8px 14px; font: 700 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
 .link { background: none; border: 0; padding: 0; font-size: 14px; font-weight: 700; color: var(--accent-ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .link:disabled { color: var(--ink-3); text-decoration: none; opacity: 1; }
 .banner { margin: 0; padding: 9px 12px; border-radius: 12px; font-size: 14px; background: #fff6d9; color: var(--ink); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); }
@@ -149,7 +150,7 @@ h1 { margin: 0; font: 800 26px/1 "DM Sans", system-ui, sans-serif; letter-spacin
 .screen .seg { background: rgba(0, 0, 0, 0.35); box-shadow: inset 0 0 0 1px rgba(159, 245, 207, 0.35); padding: 3px; border-radius: 10px; }
 .screen .seg button { background: none; box-shadow: none; color: var(--phos-dim); font-family: var(--mono); font-size: 13px; padding: 5px 12px; border-radius: 7px; border: 0; }
 .screen .seg button.on { background: var(--phos); color: var(--crt); text-shadow: none; }
-.intro { margin: 0; max-width: 46ch; font-size: 14px; line-height: 1.5; color: var(--phos-dim); }
+.intro { margin: 0; max-width: 46ch; font: 500 15px/1.5 "DM Sans", system-ui, sans-serif; color: var(--phos-dim); text-wrap: balance; }
 .dots { display: flex; gap: 8px; }
 .dots i { width: 10px; height: 10px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--phos-dim); }
 .dots i.done { background: var(--phos); box-shadow: 0 0 8px rgba(159, 245, 207, 0.8); }
@@ -277,7 +278,7 @@ body.phone main { display: none; }
   .screen { padding: 18px 22px; }
   .face.big { display: none; }
   .prompt { gap: 8px; }
-  .intro { font-size: 12px; }
+  .intro { font-size: 13px; }
   .mood-label { font-size: 36px; }
   #readLine { font-size: 28px; }
   .deck { margin-top: 10px; padding-top: 10px; }
@@ -398,7 +399,7 @@ h1 { white-space: nowrap; font-size: 24px; }
         </div>
         <div id="recBar" class="recbar">
           <button id="rec" class="key red"><span class="dot"></span><span id="recLabel">Record</span></button>
-          <p class="alt"><span>or <button id="pick" class="link">choose a file</button></span><button id="skip" class="link">skip this mood</button><button id="quit" class="link">cancel</button></p>
+          <div class="alt"><button id="pick" class="key sm">Use a file</button><button id="skip" class="key sm">Skip mood</button><button id="quit" class="key sm">Cancel</button></div>
           <input id="file" type="file" accept="audio/*" class="hidden">
           <input id="packFile" type="file" accept=".json,application/json" class="hidden">
         </div>
