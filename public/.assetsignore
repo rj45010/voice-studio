@@ -1,2 +1,3 @@
 _test.html
 .assetsignore
+__pycache__
