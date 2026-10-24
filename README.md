@@ -21,4 +21,4 @@ The engine and model are provided as is, with no warranty. This section summariz
 
 ## License
 
-Copyright (c) 2026 Rahul Jangid. All rights reserved. The code is public to read; no license is granted to copy, modify or redistribute it.
+Copyright 2026 Rahul Jangid. Voice Studio's code is licensed under the [Apache License 2.0](LICENSE). That license covers this repository's code only. The OmniVoice model keeps its own terms, including non-commercial use only, as set out above.
