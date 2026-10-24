@@ -39,7 +39,7 @@
 * { box-sizing: border-box; }
 html { -webkit-font-smoothing: antialiased; }
 body {
-  margin: 0; color: var(--ink); min-height: 100vh;
+  margin: 0; color: var(--ink); min-height: 100vh; display: flow-root;
   font: 500 16px/1.45 "DM Sans", -apple-system, system-ui, sans-serif;
   background:
     radial-gradient(ellipse 80% 50% at 50% 115%, #6d4d4a 0 40%, transparent 70%),
@@ -65,7 +65,6 @@ button:disabled { cursor: default; opacity: 0.45; }
 header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin-bottom: 14px; }
 .plate { justify-self: start; display: flex; align-items: baseline; gap: 14px; }
 h1 { margin: 0; font: 800 26px/1 "DM Sans", system-ui, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9); }
-.model { margin: 0; font: 400 12px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
 .private { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-2); padding: 7px 14px; border-radius: 10px; background: rgba(255, 255, 255, 0.45); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12); }
 .private b { color: var(--ink); font-weight: 700; }
 .private svg { width: 15px; height: 15px; color: var(--good); }
@@ -127,13 +126,13 @@ h1 { margin: 0; font: 800 26px/1 "DM Sans", system-ui, sans-serif; letter-spacin
 .pack-actions { margin-left: auto; display: flex; gap: 2px; }
 .bank .voice .pack-actions button { background: none; box-shadow: none; padding: 4px 8px; font-size: 15px; color: var(--ink-2); border-radius: 6px; }
 .bank .voice .pack-actions button:hover { color: var(--accent-ink); background: none; }
-.alt { margin: 0; text-align: center; font-size: 14px; color: var(--ink-2); }
+.alt { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; font-size: 14px; color: var(--ink-2); white-space: nowrap; }
 .link { background: none; border: 0; padding: 0; font-size: 14px; font-weight: 700; color: var(--accent-ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .link:disabled { color: var(--ink-3); text-decoration: none; opacity: 1; }
 .banner { margin: 0; padding: 9px 12px; border-radius: 12px; font-size: 14px; background: #fff6d9; color: var(--ink); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); }
 
 .crt-wrap { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.crt { flex: 1; padding: 22px; border-radius: 30px; background: linear-gradient(#e2dac9, #cfc5b1); box-shadow: inset 0 2px 0 #fff8, inset 0 -3px 0 #0001, 0 0 0 1px var(--edge), 0 10px 22px -12px rgba(60, 40, 20, 0.5); display: flex; min-height: 0; }
+.crt { flex: 1; padding: 22px; border-radius: 30px; background: linear-gradient(#e2dac9, #cfc5b1); box-shadow: inset 0 2px 0 #fff8, inset 0 -3px 0 #0001, 0 0 0 1px var(--edge), 0 10px 22px -12px rgba(60, 40, 20, 0.5); display: flex; flex-direction: column; gap: 16px; min-height: 0; }
 .screen {
   flex: 1; position: relative; overflow: auto; scrollbar-width: none; border-radius: 26px / 30px; padding: 26px 30px;
   color: var(--phos); font-family: var(--mono); background: radial-gradient(ellipse at 50% 40%, #1d4a40 0%, var(--crt) 70%, #08150f 100%);
@@ -215,9 +214,9 @@ body.wizard #nowPlaying { display: none; }
 #rec.recording .dot { background: #ff5a3c; animation: blink 0.8s steps(2) infinite; box-shadow: 0 0 8px 2px rgba(255, 90, 60, 0.8); }
 
 .seg { display: inline-flex; padding: 3px; gap: 2px; }
-.bank .seg { padding: 3px; }
-.bank .seg button { background: none; box-shadow: none; padding: 5px 10px; font-size: 13px; border-radius: 8px; }
-.bank .seg button.on { background: var(--ink); color: #fffaf0; }
+.bank .seg, #install .seg { padding: 3px; }
+.bank .seg button, #install .seg button { background: none; box-shadow: none; padding: 5px 10px; font-size: 13px; border-radius: 8px; transform: none; }
+.bank .seg button.on, #install .seg button.on { background: var(--ink); color: #fffaf0; }
 .help { width: 30px; height: 30px; padding: 0; border-radius: 50%; font-weight: 800; border: 0; background: var(--m-excited); box-shadow: 0 0 0 1px rgba(80, 65, 45, 0.3), 0 3px 0 #c2a24d; }
 .help:active { transform: translateY(2px); box-shadow: 0 0 0 1px rgba(80, 65, 45, 0.3), 0 1px 0 #c2a24d; }
 .sticky { position: relative; padding: 14px 16px 12px; background: #fbe69a; border-radius: 4px; transform: rotate(-1.2deg); box-shadow: 0 10px 16px -10px rgba(60, 40, 20, 0.5); font-size: 14px; }
@@ -276,7 +275,9 @@ body.phone main { display: none; }
   header { margin-bottom: 10px; }
   .crt { padding: 16px; }
   .screen { padding: 18px 22px; }
-  .face.big svg { width: 58px; height: 58px; }
+  .face.big { display: none; }
+  .prompt { gap: 8px; }
+  .intro { font-size: 12px; }
   .mood-label { font-size: 36px; }
   #readLine { font-size: 28px; }
   .deck { margin-top: 10px; padding-top: 10px; }
@@ -287,7 +288,6 @@ body.phone main { display: none; }
 .mkey:disabled { opacity: 1; cursor: default; }
 .plate { gap: 4px 14px; flex-wrap: wrap; }
 h1 { white-space: nowrap; font-size: 24px; }
-.model { white-space: nowrap; }
 .voice .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .voice .muted { white-space: nowrap; }
 .bank .seg { background: var(--body-lo); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.7); border-radius: 11px; }
@@ -333,7 +333,6 @@ h1 { white-space: nowrap; font-size: 24px; }
   <header>
     <div class="plate">
       <h1>Voice Studio</h1>
-      <p class="model">Your script · your voice · VS-2</p>
     </div>
     <p class="private"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11V8a4 4 0 0 1 8 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg><b>Runs on your computer.</b> Nothing is uploaded.</p>
     <span id="status" class="status checking"><i class="led"></i><span id="statusText">Checking</span><svg class="gear" viewBox="0 0 24 24" aria-hidden="true"></svg></span>
@@ -397,12 +396,12 @@ h1 { white-space: nowrap; font-size: 24px; }
           </div>
           <p id="vwarn" class="err"></p>
         </div>
-      </div>
-      <div id="recBar" class="recbar">
-        <button id="rec" class="key red"><span class="dot"></span><span id="recLabel">Record</span></button>
-        <p class="alt">or <button id="pick" class="link">choose a file</button> · <button id="skip" class="link">skip this mood</button> · <button id="quit" class="link">cancel</button></p>
-        <input id="file" type="file" accept="audio/*" class="hidden">
-        <input id="packFile" type="file" accept=".json,application/json" class="hidden">
+        <div id="recBar" class="recbar">
+          <button id="rec" class="key red"><span class="dot"></span><span id="recLabel">Record</span></button>
+          <p class="alt"><span>or <button id="pick" class="link">choose a file</button></span><button id="skip" class="link">skip this mood</button><button id="quit" class="link">cancel</button></p>
+          <input id="file" type="file" accept="audio/*" class="hidden">
+          <input id="packFile" type="file" accept=".json,application/json" class="hidden">
+        </div>
       </div>
     </section>
 
